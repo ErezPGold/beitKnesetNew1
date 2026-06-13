@@ -1,0 +1,194 @@
+<Window x:Class="BeitKnessetDisplay.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="תצוגת בית כנסת"
+        WindowState="Maximized"
+        WindowStyle="None"
+        FlowDirection="RightToLeft"
+        FontFamily="Segoe UI, David, Arial Hebrew"
+        xml:lang="he-IL"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="ClearType">
+    <Window.Background>
+        <SolidColorBrush Color="#FFF8F9F0"/>
+    </Window.Background>
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="#1A2238"/>
+            <Setter Property="CornerRadius" Value="18"/>
+            <Setter Property="Padding" Value="18"/>
+            <Setter Property="Margin" Value="12"/>
+            <Setter Property="BorderBrush" Value="#2A3556"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        <Style x:Key="Label" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#8AA0C8"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+        <Style x:Key="Value" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+        <SolidColorBrush x:Key="BrandBurgundy" Color="#6B1F2A"/>
+        <SolidColorBrush x:Key="BrandOrange" Color="#E8842C"/>
+        <SolidColorBrush x:Key="BrandOrangeLight" Color="#F5A623"/>
+        <SolidColorBrush x:Key="BrandDark" Color="#2B0F12"/>
+    </Window.Resources>
+
+
+    <Grid Margin="40">
+       
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- כותרת + שעון ענק -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="לוח יומי בית כנסת אוהל יעקב" FontSize="56" FontWeight="Bold" Foreground="#6B1F2A"/>
+                <TextBlock Text="{Binding HebrewDate}" FontSize="40" Foreground="#2B0F12" Margin="0,6,0,0"/>
+                <TextBlock Text="{Binding GregorianDate}" FontSize="26" Foreground="#6B1F2A"/>
+            </StackPanel>
+            <TextBlock Grid.Column="1"
+                       Text="{Binding Clock}"
+                       FontSize="150" FontWeight="Bold" Foreground="#6B1F2A"
+                       VerticalAlignment="Center" Margin="20,0,0,0"
+                       FontFamily="Consolas, Segoe UI"/>
+        </Grid>
+
+        <!-- באנר שבת מברכים -->
+        <Border Grid.Row="1" Margin="8,16,8,0"
+                Background="#3A2A0E" BorderBrush="#FFD27A" BorderThickness="2"
+                CornerRadius="14" Padding="20"
+                Visibility="{Binding IsShabbatMevarchim, Converter={StaticResource BoolToVis}}">
+            <StackPanel>
+                <TextBlock Text="{Binding ShabbatMevarchimText}"
+                           FontSize="44" FontWeight="Bold" Foreground="#FFD27A"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding MoladText}"
+                           FontSize="30" Foreground="White" Margin="0,8,0,0"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- פרשה + הפטרה + תפילות -->
+        <Grid Grid.Row="2" Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border Style="{StaticResource Card}" Grid.Column="0">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Label}" Text="פרשת השבוע"/>
+                    <TextBlock Style="{StaticResource Value}" Text="{Binding Parasha}" FontSize="54" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Grid.Column="1">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Label}" Text="הפטרה"/>
+                    <TextBlock Style="{StaticResource Value}" Text="{Binding Haftarah}" FontSize="40"/>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Grid.Column="2">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Label}" Text="זמני תפילה"/>
+                    <TextBlock Style="{StaticResource Value}" Text="{Binding Prayers}" FontSize="42"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- שיעורים יומיים -->
+        <Grid Grid.Row="3" Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Style="{StaticResource Card}" Grid.Row="0" Grid.Column="0">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Label}" Text="תהילים יומי"/>
+                    <TextBlock Style="{StaticResource Value}" Text="{Binding Tehillim}"/>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Grid.Row="0" Grid.Column="1">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Label}" Text="חומש יומי"/>
+                    <TextBlock Style="{StaticResource Value}" Text="{Binding Chumash}"/>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Grid.Row="0" Grid.Column="2">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Label}" Text="דף יומי"/>
+                    <Viewbox Stretch="Uniform" StretchDirection="DownOnly" MaxHeight="80">
+                        <TextBlock Style="{StaticResource Value}"
+                       Text="{Binding DafYomi}"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"/>
+                    </Viewbox>
+                </StackPanel>
+            </Border>
+
+           
+
+            <Border Style="{StaticResource Card}" Grid.Row="1" Grid.Column="0">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Label}" Text="רמב״ם (3 פרקים)"/>
+                    <TextBlock Style="{StaticResource Value}" Text="{Binding Rambam}"/>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Grid.Row="1" Grid.Column="1">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Label}" Text="תניא"/>
+                    <TextBlock Style="{StaticResource Value}" Text="{Binding Tanya}"/>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Grid.Row="1" Grid.Column="2">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Label}" Text="היום יום"/>
+                    <TextBlock Style="{StaticResource Value}" Text="{Binding HayomYom}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- זמני היום -->
+        <Border Grid.Row="4" Style="{StaticResource Card}" Margin="12,20,12,0">
+            <ItemsControl ItemsSource="{Binding Zmanim}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel HorizontalAlignment="Center" Margin="10">
+                            <TextBlock Text="{Binding Name}" Style="{StaticResource Label}"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding Time}" Foreground="#87CEFA"
+                                       FontSize="46" FontWeight="Bold"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+    </Grid>
+</Window>
