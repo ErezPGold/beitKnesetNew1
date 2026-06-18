@@ -29,13 +29,14 @@ namespace BeitKnessetDisplay
             _refreshTimer.Start();
 
             // החלפת עמודים בלולאה
-            _pageTimer.Interval = TimeSpan.FromSeconds(DisplayViewModel.PageDurationSeconds);
-            _pageTimer.Tick += (_, _) => _vm.AdvancePage();
+            // החלפת עמודים בלולאה - משך משתנה לפי סוג הדף
+            _pageTimer.Interval = TimeSpan.FromSeconds(DisplayViewModel.DashboardDurationSeconds);
+            _pageTimer.Tick += (_, _) =>
+            {
+                _vm.AdvancePage();
+                _pageTimer.Interval = TimeSpan.FromSeconds(_vm.CurrentPageDurationSeconds);
+            };
             _pageTimer.Start();
-
-            var _learningTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(15) };
-            _learningTimer.Tick += (_, _) => _vm.AdvanceLearningPage();
-            _learningTimer.Start();
 
         }
     }

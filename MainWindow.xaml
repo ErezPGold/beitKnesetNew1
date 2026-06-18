@@ -445,10 +445,10 @@
                         <Path Style="{StaticResource StarOfDavid}" Width="80" Height="80"
                               HorizontalAlignment="Center" Margin="0,0,0,30"/>
                         <TextBlock Text="{Binding ReminderTitle}"
-                                   FontSize="100" FontWeight="ExtraBold" Foreground="{StaticResource GoldBrush}"
+                                   FontSize="80" FontWeight="ExtraBold" Foreground="{StaticResource GoldBrush}"
                                    TextAlignment="Center" TextWrapping="Wrap"/>
                         <TextBlock Text="{Binding ReminderBody}"
-                                   FontSize="56" Foreground="White"
+                                   FontSize="40" Foreground="White"
                                    TextAlignment="Center" TextWrapping="Wrap"
                                    Margin="0,50,0,0"/>
                     </StackPanel>
@@ -476,7 +476,7 @@
                         <Path Style="{StaticResource StarOfDavid}" Width="70" Height="70"
                               HorizontalAlignment="Center" Margin="0,0,0,20"/>
                         <TextBlock Text="לזכות רפואה שלמה והצלחה"
-                                   FontSize="88" FontWeight="ExtraBold" Foreground="{StaticResource GoldBrush}"
+                                   FontSize="78" FontWeight="ExtraBold" Foreground="{StaticResource GoldBrush}"
                                    TextAlignment="Center"/>
                         <Rectangle Height="2" Fill="{StaticResource GoldBrush}" Opacity="0.6" Margin="40,20,40,0"/>
                         <ItemsControl ItemsSource="{Binding RefuahList}" Margin="0,40,0,0"
@@ -499,14 +499,14 @@
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="60">
                         <!-- נר נשמה -->
                         <Viewbox Width="80" Height="100" HorizontalAlignment="Center" Margin="0,0,0,20">
-                            <Canvas Width="60" Height="100">
+                            <Canvas Width="60" Height="80">
                                 <Ellipse Canvas.Left="24" Canvas.Top="0" Width="12" Height="22" Fill="{StaticResource GoldBrush}"/>
                                 <Rectangle Canvas.Left="28" Canvas.Top="20" Width="4" Height="20" Fill="#2A2A2A"/>
                                 <Rectangle Canvas.Left="15" Canvas.Top="40" Width="30" Height="50" Fill="{StaticResource GoldBrush}" RadiusX="4" RadiusY="4"/>
                             </Canvas>
                         </Viewbox>
                         <TextBlock Text="לעילוי נשמת"
-                                   FontSize="88" FontWeight="ExtraBold" Foreground="{StaticResource GoldBrush}"
+                                   FontSize="78" FontWeight="ExtraBold" Foreground="{StaticResource GoldBrush}"
                                    TextAlignment="Center"/>
                         <Rectangle Height="2" Fill="{StaticResource GoldBrush}" Opacity="0.6" Margin="40,20,40,0"/>
                         <ItemsControl ItemsSource="{Binding NeshamaList}" Margin="0,40,0,0"
@@ -514,7 +514,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding}"
-                                               FontSize="46" Foreground="White"
+                                               FontSize="36" Foreground="White"
                                                TextAlignment="Center"
                                                Margin="0,10"/>
                                 </DataTemplate>

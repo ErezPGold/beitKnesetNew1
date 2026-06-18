@@ -68,11 +68,15 @@ namespace BeitKnessetDisplay
         // שמות לעילוי נשמה
         public static readonly IReadOnlyList<string> NeshamaNames = new List<string>
         {
-            "יעקב בן שלמה","לאה בת אסתר","סבא רחמים","סבתא סוליקה",
+            "יעקב בן שלמה","לאה בת אסתר","סבא רחמים","סבתא סוליקה","דוד פיניאן",
         };
 
         // משך הצגה של כל עמוד (שניות)
-        public const int PageDurationSeconds = 10;
+        public const int DashboardDurationSeconds = 24;   // דף הלימוד - ארוך
+        public const int OtherPageDurationSeconds = 7;    // שאר הדפים - קצר
+        public int CurrentPageDurationSeconds =>
+            IsDashboardVisible ? DashboardDurationSeconds : OtherPageDurationSeconds;
+
 
         public event PropertyChangedEventHandler? PropertyChanged;
         private void Set<T>(ref T field, T value, [CallerMemberName] string? name = null)
@@ -149,7 +153,7 @@ namespace BeitKnessetDisplay
         /// מחזוריות: דשבורד → תזכורות → זמני תפילות → לזכות → לעילוי נשמה → חוזר.
         /// </summary>
         public void AdvancePage()
-        {
+        {            
             int total = 1 + Reminders.Count + 1 + 1 + 1;
             _pageIndex = (_pageIndex + 1) % total;
 
@@ -162,6 +166,7 @@ namespace BeitKnessetDisplay
             if (_pageIndex == 0)
             {
                 IsDashboardVisible = true;
+                AdvanceLearningPage();
             }
             else if (_pageIndex <= Reminders.Count)
             {
