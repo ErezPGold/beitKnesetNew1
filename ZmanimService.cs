@@ -42,7 +42,7 @@ namespace BeitKnesset.Services
             {
                 new("עלות השחר",       Fmt(cz.GetAlosHashachar())),
                 new("נץ החמה",         Fmt(cz.GetSunrise())),
-                new("סוף זמן ש\"מ",    Fmt(cz.GetSofZmanShmaGRA())),
+                new("סוף זמן ק\"ש",    Fmt(cz.GetSofZmanShmaGRA())),
                 new("סוף זמן תפילה",   Fmt(cz.GetSofZmanTfilaGRA())),
                 new("חצות",            Fmt(cz.GetChatzos())),
                 new("מנחה גדולה",      Fmt(cz.GetMinchaGedola())),
