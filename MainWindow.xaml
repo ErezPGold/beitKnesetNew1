@@ -123,7 +123,7 @@
 
                                     <!-- תיקון כיווניות לטמפרטורה -->
                                     <TextBlock Text="{Binding CurrentTemperature}" Style="{StaticResource Value}" FontSize="26"
-                                                FlowDirection="LeftToRight" TextAlignment="Right"/>
+                                                FlowDirection="LeftToRight" TextAlignment="Center"/>
 
                                     <TextBlock Text="{Binding WeatherCondition}"   Style="{StaticResource Value}" FontSize="20" Foreground="{StaticResource Muted}"/>
                                 </StackPanel>

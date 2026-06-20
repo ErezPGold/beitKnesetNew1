@@ -1,5 +1,6 @@
 using BeitKnesetBoard.Models;
 using BeitKnesset.Services;
+using BeitKnessetDisplay.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,6 +8,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+
 
 namespace BeitKnessetDisplay
 {
@@ -20,6 +22,8 @@ namespace BeitKnessetDisplay
         private readonly JewishService _jewish = new();
         private readonly ZmanimService _zmanim = new(lat: 32.08, lng: 34.78, elevation: 0);
         private readonly SefariaService _sefaria = new SefariaService();
+        private readonly ParashaSummaryService _parashaSummary = new ParashaSummaryService();
+
         private int _learningPage = 0;          // 0,1,2
         private bool _isLearningPage1 = true;
         private bool _isLearningPage2 = false;
@@ -112,6 +116,10 @@ namespace BeitKnessetDisplay
         private IReadOnlyList<ZmanItem> _zmanimList = Array.Empty<ZmanItem>();
         private string _rambam1Perek = "", _mishna = "", _yerushalmi = "", _halakha = "";
         private string _tanakhYomi = "", _yom929 = "", _chokLeYisrael = "", _arukhHaShulchan = "";
+        private string _parshaName = "", _parshaSummary2 = "";
+        public string ParshaName { get => _parshaName; set => Set(ref _parshaName, value); }
+        public string ParshaSummary { get => _parshaSummary2; set => Set(ref _parshaSummary2, value); }
+
 
         private int _pageIndex = 0;
         private string _reminderTitle = "", _reminderBody = "";
@@ -252,6 +260,14 @@ namespace BeitKnessetDisplay
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        
+        public async Task LoadParshaAsync()
+        {
+            var p = await _parashaSummary.GetWeeklyParshaAsync();
+            ParshaName = p.Name;
+            ParshaSummary = p.Summary;
+        }
+
 
         public async Task RefreshAll()
         {
@@ -338,7 +354,9 @@ namespace BeitKnessetDisplay
             System.Windows.Threading.DispatcherTimer weatherTimer = new System.Windows.Threading.DispatcherTimer();
             weatherTimer.Interval = TimeSpan.FromHours(1); // מגדיר הרצה פעם בשעה בדיוק
             weatherTimer.Tick += async (s, e) => await UpdateWeatherAsync();
-            weatherTimer.Start();   
+            weatherTimer.Start();
+
+            await LoadParshaAsync();
 
         }
     }
