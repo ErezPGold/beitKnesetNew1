@@ -6,30 +6,44 @@
         WindowStyle="None"
         FlowDirection="RightToLeft"
         FontFamily="Segoe UI, David, Arial Hebrew">
-
+    <Window.Background>
+        <ImageBrush ImageSource="Assets/jerusalem-joyful.jpeg" 
+                Stretch="UniformToFill" 
+                Opacity="0.55"/>
+    </Window.Background>
     <Window.Resources>
-        <!-- ===== עץ למסגרת ===== -->
+        <!-- מסגרת זהובה זוהרת -->
         <LinearGradientBrush x:Key="WoodBrush" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#3E2412" Offset="0"/>
-            <GradientStop Color="#6B3E1F" Offset="0.25"/>
-            <GradientStop Color="#8B5A2B" Offset="0.5"/>
-            <GradientStop Color="#5C3317" Offset="0.75"/>
-            <GradientStop Color="#2E1A0B" Offset="1"/>
+            <GradientStop Color="#8B4513" Offset="0"/>
+            <GradientStop Color="#D4A574" Offset="0.5"/>
+            <GradientStop Color="#8B4513" Offset="1"/>
         </LinearGradientBrush>
 
+        <SolidColorBrush x:Key="GoldTrim" Color="#FFD700"/>
+
+        <!-- כרטיסיות עם שקיפות חמה - מאפשרת לראות את הרקע -->
+        <LinearGradientBrush x:Key="CardBg" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#E61a1a3e" Offset="0"/>
+            <GradientStop Color="#E62d1b4e" Offset="1"/>
+        </LinearGradientBrush>
+
+        <SolidColorBrush x:Key="GlassBg" Color="#CC0a0a2e"/>
+
+        <!-- צבעי טקסט חמים -->
+        <SolidColorBrush x:Key="GoldText" Color="#FFD700"/>
+        <SolidColorBrush x:Key="LightText" Color="#FFF8E7"/>
+        <SolidColorBrush x:Key="WarmAccent" Color="#FF8C42"/>
+
+        <!-- ===== מסגרת – כחול עמוק עם זהב ===== -->
+        
         <LinearGradientBrush x:Key="WoodHighlight" StartPoint="0,0" EndPoint="0,1">
-            <GradientStop Color="#D4A574" Offset="0"/>
-            <GradientStop Color="#8B5A2B" Offset="0.5"/>
-            <GradientStop Color="#3E2412" Offset="1"/>
-        </LinearGradientBrush>
-
-        <SolidColorBrush x:Key="GoldTrim" Color="#C9A24B"/>
-
-        <!-- ===== שכבת זכוכית מעל הרקע ===== -->
-        <SolidColorBrush x:Key="GlassBg" Color="#0E1B12" Opacity="0.55"/>
-        <SolidColorBrush x:Key="CardBg"  Color="#0A1610" Opacity="0.70"/>
-        <SolidColorBrush x:Key="Ivory"   Color="#F5EBD6"/>
-        <SolidColorBrush x:Key="Muted"   Color="#C9B98C"/>
+            <GradientStop Color="#e8c45a" Offset="0"/>
+            <GradientStop Color="#d4af37" Offset="0.5"/>
+            <GradientStop Color="#8a6f1f" Offset="1"/>
+        </LinearGradientBrush>       
+        
+        <SolidColorBrush x:Key="Ivory"   Color="#e8edf3"/>
+        <SolidColorBrush x:Key="Muted"   Color="#9bb3cc"/>
 
         <!-- ===== סגנונות ===== -->
         <Style x:Key="Card" TargetType="Border">
@@ -41,7 +55,7 @@
             <Setter Property="Margin" Value="8"/>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect Color="Black" Opacity="0.6" BlurRadius="14" ShadowDepth="2"/>
+                    <DropShadowEffect Color="Black" Opacity="0.7" BlurRadius="16" ShadowDepth="2"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -59,51 +73,115 @@
             <Setter Property="TextWrapping" Value="Wrap"/>
             <Setter Property="TextAlignment" Value="Center"/>
         </Style>
-        <!-- כותרת גדולה לכרטיס לימוד -->
+
         <Style x:Key="LearnLabel" TargetType="TextBlock" BasedOn="{StaticResource Label}">
             <Setter Property="FontSize" Value="36"/>
             <Setter Property="Margin" Value="0,0,0,12"/>
         </Style>
 
-        <!-- תוכן גדול לכרטיס לימוד -->
         <Style x:Key="LearnValue" TargetType="TextBlock" BasedOn="{StaticResource Value}">
             <Setter Property="FontSize" Value="44"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="LineHeight" Value="56"/>
         </Style>
+        <!-- ===== אנימציות ===== -->
+        <Storyboard x:Key="FadeIn">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                     From="0" To="1" Duration="0:0:0.6"/>
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                     From="20" To="0" Duration="0:0:0.6">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
 
+        <!-- סגנון כרטיסיה מונפש -->
+        <Style x:Key="AnimatedCard" TargetType="Border" BasedOn="{StaticResource Card}">
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <TranslateTransform Y="0"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="Border.Loaded">
+                    <BeginStoryboard Storyboard="{StaticResource FadeIn}"/>
+                </EventTrigger>
+                <Trigger Property="Visibility" Value="Visible">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource FadeIn}"/>
+                    </Trigger.EnterActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- אנימציית הבהוב לאייקון נר -->
+        <Style x:Key="CandleIcon" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="48"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="TextBlock.Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                     From="1" To="1.15" Duration="0:0:1.2"/>
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                     From="1" To="0.75" Duration="0:0:1.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- אייקון מסתובב עדין (לכותרות) -->
+        <Style x:Key="PulseIcon" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="40"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="TextBlock.Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                     From="1" To="1.1" Duration="0:0:2"/>
+                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                     From="1" To="1.1" Duration="0:0:2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
-    <!-- ===== מסגרת עץ חיצונית ===== -->
+    <!-- ===== מסגרת חיצונית כחול-זהב ===== -->
     <Border Background="{StaticResource WoodBrush}" Padding="0">
         <Border.Effect>
             <DropShadowEffect Color="Black" Opacity="0.9" BlurRadius="30" ShadowDepth="0"/>
         </Border.Effect>
-
-        <!-- שוליים פנימיים של המסגרת (עובי "העץ") -->
         <Grid Margin="38">
-            <!-- קו זהב פנימי על גבול המסגרת -->
             <Border BorderBrush="{StaticResource GoldTrim}" BorderThickness="2" CornerRadius="4">
-
-                <!-- ===== רקע טבע (יער) ===== -->
+                <!-- ===== רקע ירושלים (כיפת הסלע + הכותל) ===== -->
                 <Grid>
-                    <Grid.Background>
-                        <ImageBrush Stretch="UniformToFill"
-                                    ImageSource="https://images.unsplash.com/photo-1448375240586-882707db888b?w=1920&amp;q=80"/>
-                    </Grid.Background>
-
-                    <!-- שכבת זכוכית כהה לקריאות טקסט -->
-                    <Rectangle Fill="{StaticResource GlassBg}"/>
+                    <!-- שכבת כהות עדינה לקריאות בלבד (30% במקום 80%) -->
+                    <Rectangle Fill="#4D000000"/>
 
                     <!-- ===== תוכן ===== -->
                     <Grid Margin="20">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <!-- Header -->
                             <RowDefinition Height="*"/>
-                            <!-- Content -->
                             <RowDefinition Height="Auto"/>
-                            <!-- Zmanim bar -->
                         </Grid.RowDefinitions>
 
                         <!-- ===== HEADER ===== -->
@@ -115,37 +193,29 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <!-- שעון -->
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                     <TextBlock Text="{Binding Clock}" FontFamily="Consolas"
-                                                                       FontSize="64" Foreground="{StaticResource Ivory}"
-                                                                       TextAlignment="Center"/>
-
-                                    <!-- תיקון כיווניות לטמפרטורה -->
+                                    <TextBlock Text="{Binding Clock}" FontFamily="Consolas"
+                                               FontSize="64" Foreground="{StaticResource Ivory}"
+                                               TextAlignment="Center"/>
                                     <TextBlock Text="{Binding CurrentTemperature}" Style="{StaticResource Value}" FontSize="26"
-                                                FlowDirection="LeftToRight" TextAlignment="Center"/>
-
-                                    <TextBlock Text="{Binding WeatherCondition}"   Style="{StaticResource Value}" FontSize="20" Foreground="{StaticResource Muted}"/>
+                                               FlowDirection="LeftToRight" TextAlignment="Center"/>
+                                    <TextBlock Text="{Binding WeatherCondition}" Style="{StaticResource Value}" FontSize="20" Foreground="{StaticResource Muted}"/>
                                 </StackPanel>
 
-                                <!-- כותרת + תאריכים -->
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                     <TextBlock Text="ברוכים הבאים לבית הכנסת" FontSize="40"
                                                Foreground="{StaticResource GoldTrim}" FontWeight="Bold"
                                                TextAlignment="Center"/>
-                                    <TextBlock Text="{Binding HebrewDate}"    Style="{StaticResource Value}" FontSize="30" Margin="0,6,0,0"/>
+                                    <TextBlock Text="{Binding HebrewDate}" Style="{StaticResource Value}" FontSize="30" Margin="0,6,0,0"/>
                                     <TextBlock Text="{Binding GregorianDate}" Style="{StaticResource Value}" FontSize="22" Foreground="{StaticResource Muted}"/>
                                 </StackPanel>
 
-                                <!-- פרשה / הפטרה -->
                                 <StackPanel Grid.Column="2" VerticalAlignment="Center">
                                     <TextBlock Text="פרשת השבוע" Style="{StaticResource Label}"/>
-                                    <TextBlock Text="{Binding Parasha}"  Style="{StaticResource Value}" FontSize="26"/>
+                                    <TextBlock Text="{Binding Parasha}" Style="{StaticResource Value}" FontSize="26"/>
                                     <TextBlock Text="הפטרה" Style="{StaticResource Label}" Margin="0,8,0,0"/>
                                     <TextBlock Text="{Binding Haftarah}" Style="{StaticResource Value}" FontSize="20" Foreground="{StaticResource Muted}"/>
                                 </StackPanel>
-
-
                             </Grid>
                         </Border>
 
@@ -185,59 +255,74 @@
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="*"/>
                                             </Grid.RowDefinitions>
-                                            <TextBlock Grid.Row="0" Text="תהילים יומי" Style="{StaticResource LearnLabel}"/>
+                                            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock Text="📖 " FontSize="32" Foreground="{StaticResource GoldTrim}"/>
+                                                <TextBlock Text="תהילים יומי" Style="{StaticResource LearnLabel}"/>
+                                            </StackPanel>
                                             <Viewbox Grid.Row="1" Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
                                                 <TextBlock Text="{Binding Tehillim}" Style="{StaticResource LearnValue}"
                                                                     MaxWidth="600" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Viewbox>
                                         </Grid>
                                     </Border>
-                                    <Border Style="{StaticResource Card}">
+                                    <Border Style="{StaticResource AnimatedCard}">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="*"/>
                                             </Grid.RowDefinitions>
-                                            <TextBlock Grid.Row="0" Text="חומש (עליה יומית)" Style="{StaticResource LearnLabel}"/>
+                                            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock Text="📜 " FontSize="32" Foreground="{StaticResource GoldTrim}"/>
+                                                <TextBlock  Text="חומש (עליה יומית)" Style="{StaticResource LearnLabel}"/>
+                                            </StackPanel>                                            
                                             <Viewbox Grid.Row="1" Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
                                                 <TextBlock Text="{Binding Chumash}" Style="{StaticResource LearnValue}"
                                                             MaxWidth="600" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Viewbox>
                                         </Grid>
                                     </Border>
-                                    <Border Style="{StaticResource Card}">
+                                    <Border Style="{StaticResource AnimatedCard}">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="*"/>
                                             </Grid.RowDefinitions>
-                                            <TextBlock Grid.Row="0" Text="דף יומי" Style="{StaticResource LearnLabel}"/>
+                                            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock Text="📚 " FontSize="32" Foreground="{StaticResource GoldTrim}"/>
+                                                <TextBlock Text="דף יומי" Style="{StaticResource LearnLabel}"/>
+                                            </StackPanel>
                                             <Viewbox Grid.Row="1" Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
                                                 <TextBlock Text="{Binding DafYomi}" Style="{StaticResource LearnValue}"
                                                                 MaxWidth="600" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Viewbox>
                                         </Grid>
                                     </Border>
-                                    <Border Style="{StaticResource Card}">
+                                    <Border Style="{StaticResource AnimatedCard}">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="*"/>
                                             </Grid.RowDefinitions>
-                                            <TextBlock Grid.Row="0" Text="רמב״ם (ג׳ פרקים)" Style="{StaticResource LearnLabel}"/>
+                                            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock Text="📚 " FontSize="32" Foreground="{StaticResource GoldTrim}"/>
+                                                <TextBlock Text="רמב״ם (ג׳ פרקים)" Style="{StaticResource LearnLabel}"/>
+                                            </StackPanel>
                                             <Viewbox Grid.Row="1" Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
                                                 <TextBlock Text="{Binding Rambam}" Style="{StaticResource LearnValue}"
                                                         MaxWidth="600" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Viewbox>
                                         </Grid>
                                     </Border>
-                                    <Border Style="{StaticResource Card}">
+                                    <Border Style="{StaticResource AnimatedCard}">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="*"/>
                                             </Grid.RowDefinitions>
-                                            <TextBlock Grid.Row="0" Text="תניא יומי" Style="{StaticResource LearnLabel}"/>
+                                            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock Text="💎 " FontSize="32" Foreground="{StaticResource GoldTrim}"/>
+                                                <TextBlock Text="תניא יומי" Style="{StaticResource LearnLabel}"/>
+                                            </StackPanel>
                                             <Viewbox Grid.Row="1" Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
                                                 <TextBlock Text="{Binding Tanya}" Style="{StaticResource LearnValue}"
                                                             MaxWidth="600" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -245,7 +330,7 @@
                                         </Grid>
                                     </Border>
 
-                                    <Border Style="{StaticResource Card}">
+                                    <Border Style="{StaticResource AnimatedCard}">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
@@ -272,7 +357,7 @@
                                             </Style.Triggers>
                                         </Style>
                                     </UniformGrid.Style>
-                                    <Border Style="{StaticResource Card}">
+                                    <Border Style="{StaticResource AnimatedCard}">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
@@ -285,7 +370,7 @@
                                             </Viewbox>
                                         </Grid>
                                     </Border>
-                                    <Border Style="{StaticResource Card}">
+                                    <Border Style="{StaticResource AnimatedCard}">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
@@ -298,7 +383,7 @@
                                             </Viewbox>
                                         </Grid>
                                     </Border>
-                                    <Border Style="{StaticResource Card}">
+                                    <Border Style="{StaticResource AnimatedCard}">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
@@ -311,7 +396,7 @@
                                             </Viewbox>
                                         </Grid>
                                     </Border>
-                                    <Border Style="{StaticResource Card}">
+                                    <Border Style="{StaticResource AnimatedCard}">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
@@ -324,7 +409,7 @@
                                             </Viewbox>
                                         </Grid>
                                     </Border>
-                                    <Border Style="{StaticResource Card}">
+                                    <Border Style="{StaticResource AnimatedCard}">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
@@ -337,7 +422,7 @@
                                             </Viewbox>
                                         </Grid>
                                     </Border>
-                                    <Border Style="{StaticResource Card}">
+                                    <Border Style="{StaticResource AnimatedCard}">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
@@ -364,7 +449,7 @@
                                             </Style.Triggers>
                                         </Style>
                                     </UniformGrid.Style>
-                                    <Border Style="{StaticResource Card}">
+                                    <Border Style="{StaticResource AnimatedCard}">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
@@ -377,7 +462,7 @@
                                             </Viewbox>
                                         </Grid>
                                     </Border>
-                                    <Border Style="{StaticResource Card}">
+                                    <Border Style="{StaticResource AnimatedCard}">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
@@ -390,7 +475,7 @@
                                             </Viewbox>
                                         </Grid>
                                     </Border>
-                                    <Border Style="{StaticResource Card}">
+                                    <Border Style="{StaticResource AnimatedCard}">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
@@ -416,7 +501,7 @@
                                     </Border>
                                     <Border>
                                         <Border.Style>
-                                            <Style TargetType="Border" BasedOn="{StaticResource Card}">
+                                            <Style TargetType="Border" BasedOn="{StaticResource AnimatedCard}">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsShabbatMevarchim}" Value="True">
@@ -437,7 +522,7 @@
                             <!-- ===== תזכורת ===== -->
                             <Border>
                                 <Border.Style>
-                                    <Style TargetType="Border" BasedOn="{StaticResource Card}">
+                                    <Style TargetType="Border" BasedOn="{StaticResource AnimatedCard}">
                                         <Setter Property="Visibility" Value="Collapsed"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsReminderVisible}" Value="True">
@@ -455,7 +540,7 @@
                             <!-- ===== זמני תפילות ===== -->
                             <Border>
                                 <Border.Style>
-                                    <Style TargetType="Border" BasedOn="{StaticResource Card}">
+                                    <Style TargetType="Border" BasedOn="{StaticResource AnimatedCard}">
                                         <Setter Property="Visibility" Value="Collapsed"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsPrayerTimesVisible}" Value="True">
@@ -465,6 +550,7 @@
                                     </Style>
                                 </Border.Style>
                                 <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="🕍" Style="{StaticResource PulseIcon}"/>
                                     <TextBlock Text="זמני תפילות" Style="{StaticResource Label}" FontSize="56"/>
                                     <TextBlock Text="{Binding Prayers}" Style="{StaticResource Value}" FontSize="36" Margin="20"/>
                                 </StackPanel>
@@ -473,7 +559,7 @@
                             <!-- ===== לרפואה שלמה ===== -->
                             <Border>
                                 <Border.Style>
-                                    <Style TargetType="Border" BasedOn="{StaticResource Card}">
+                                    <Style TargetType="Border" BasedOn="{StaticResource AnimatedCard}">
                                         <Setter Property="Visibility" Value="Collapsed"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsRefuahVisible}" Value="True">
@@ -483,7 +569,8 @@
                                     </Style>
                                 </Border.Style>
                                 <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="לרפואה שלמה" Style="{StaticResource Label}" FontSize="56"/>
+                                    <TextBlock Text="💙" Style="{StaticResource PulseIcon}"/>
+                                    <TextBlock Text="להצלחה ולרפואה שלמה" Style="{StaticResource Label}" FontSize="56"/>
                                     <ItemsControl ItemsSource="{Binding RefuahList}" Margin="0,20,0,0">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
@@ -497,7 +584,7 @@
                             <!-- ===== לעילוי נשמה ===== -->
                             <Border>
                                 <Border.Style>
-                                    <Style TargetType="Border" BasedOn="{StaticResource Card}">
+                                    <Style TargetType="Border" BasedOn="{StaticResource AnimatedCard}">
                                         <Setter Property="Visibility" Value="Collapsed"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsNeshamaVisible}" Value="True">
@@ -561,7 +648,6 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </Border>
-
                     </Grid>
                 </Grid>
             </Border>

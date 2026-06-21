@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <None Remove="Assets\770-background.jpeg" />
+    <None Remove="Assets\jerusalem-joyful.jpeg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,6 +20,7 @@
 
   <ItemGroup>
     <Resource Include="Assets\770-background.jpeg" />
+    <Resource Include="Assets\jerusalem-joyful.jpeg" />
   </ItemGroup>
 
   <ItemGroup>
