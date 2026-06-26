@@ -1,7 +1,11 @@
 using BeitKnesetBoard.Services;
+using BeitKnesetDisplay.Services;
+using BeitKnessetDisplay.Services;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+
 
 namespace BeitKnessetDisplay
 {
@@ -15,11 +19,16 @@ namespace BeitKnessetDisplay
         {
             try
             {
-                var day = await YahrzeitService.GetTodayAsync();
-                Dispatcher.Invoke(() => _vm.SetYahrzeit(day));
+                var tzaddikim = await YahrzeitService.GetTodayAsync();
+                _vm.SetYahrzeit(tzaddikim);
+
             }
-            catch { /* fallback to empty */ }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[Yahrzeit] " + ex.Message);
+            }
         }
+
 
         public MainWindow()
         {

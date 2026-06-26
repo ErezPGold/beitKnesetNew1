@@ -132,6 +132,16 @@ namespace BeitKnessetDisplay
 
         public ObservableCollection<Tzaddik> TzaddikimToday { get; } = new();
 
+        // כדי שגם Binding ישן ל-Yahrzeits ימשיך לעבוד
+        public ObservableCollection<Tzaddik> Yahrzeits => TzaddikimToday;
+
+        private string _yahrzeitHeader = "🕯 יום הילולא";
+        public string YahrzeitHeader
+        {
+            get => _yahrzeitHeader;
+            set => Set(ref _yahrzeitHeader, value);
+        }
+
 
         //// שמות לזכות רפואה שלמה / הצלחה
         //public static readonly IReadOnlyList<string> RefuahNames = new List<string>
@@ -150,10 +160,7 @@ namespace BeitKnessetDisplay
         // משך הצגה של כל עמוד (שניות)
         public const int DashboardDurationSeconds = 24;
         public const int OtherPageDurationSeconds = 10;
-
-        public ObservableCollection<Tzaddik> Yahrzeits { get; } = new();
-        public string YahrzeitHeader { get; set; } = "🕯 יום הילולא";
-
+        
         // במקום השורה הקיימת public bool IsYahrzeitVisible => _pageIndex == 6;
         private bool _isYahrzeitVisible = false;
         public bool IsYahrzeitVisible { get => _isYahrzeitVisible; set => Set(ref _isYahrzeitVisible, value); }
@@ -213,12 +220,11 @@ namespace BeitKnessetDisplay
         public int CurrentPageDurationSeconds =>
             IsDashboardVisible ? DashboardDurationSeconds : OtherPageDurationSeconds;
 
-        public void SetYahrzeit(YahrzeitDay day)
+        public void SetYahrzeit(IReadOnlyList<Tzaddik> list)
         {
-            Yahrzeits.Clear();
-            foreach (var t in day.Tzaddikim) Yahrzeits.Add(t);
-            YahrzeitHeader = $"🕯 יום הילולא — {day.HebDate}";
-            OnPropertyChanged(nameof(YahrzeitHeader));
+            TzaddikimToday.Clear();
+            foreach (var t in list) TzaddikimToday.Add(t);
+            OnPropertyChanged(nameof(TzaddikimToday));
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -341,7 +347,7 @@ namespace BeitKnessetDisplay
 
         // 🔥 6. הפונקציה שהייתה חסרה לך! היא זו שמונעת את שגיאה CS0103
         // המאפיין [CallerMemberName] דואג לשלוח אוטומטית את שם ה-Property ממנו קראו לה
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -459,8 +465,6 @@ namespace BeitKnessetDisplay
             }
             catch { ParshaRashi = "—"; }
 
-            TzaddikimToday = (await _yahrzeitService.GetTodayAsync()).ToList();
-            OnPropertyChanged(nameof(TzaddikimToday));
 
         }
     }

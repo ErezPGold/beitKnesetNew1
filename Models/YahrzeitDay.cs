@@ -5,6 +5,6 @@ namespace BeitKnesetBoard.Models;
 
 public class YahrzeitDay
 {
-    public string HebDate { get; set; } = "";
+    public string HebDate { get; set; } = string.Empty;
     public List<Tzaddik> Tzaddikim { get; set; } = new();
 }

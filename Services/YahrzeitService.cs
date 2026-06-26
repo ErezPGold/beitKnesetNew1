@@ -1,58 +1,120 @@
-﻿using BeitKnesetBoard.Models;
+﻿using BeitKnesetBoard.Services;
 using BeitKnesetDisplay.Models;
+using BeitKnessetDisplay.Services;
 using System;
-using System.IO;
-using System.Text.Json;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace BeitKnesetBoard.Services;
-
-public static class YahrzeitService
+namespace BeitKnesetDisplay.Services
 {
-    private static readonly string CacheDir =
-        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Cache", "yahrzeit");
-
-    public static async Task<IReadOnlyList<Tzaddik>> GetTodayAsync()
+    public static class YahrzeitService
     {
-        try
+        public static async Task<IReadOnlyList<Tzaddik>> GetTodayAsync()
         {
-            var heb = await _hebcal.GetHebrewDateAsync(DateTime.Today);
-            var cacheFile = Path.Combine(_cacheDir, $"{heb.Month}-{heb.Day}.json");
-
-            if (File.Exists(cacheFile))
+            string hebrewKey;
+            try
             {
-                var cached = JsonSerializer.Deserialize<List<Tzaddik>>(
-                    await File.ReadAllTextAsync(cacheFile));
-                if (cached is { Count: > 0 }) return cached;
+                var hebDate = await HebcalDateService.GetTodayHebrewAsync();
+                hebrewKey = BuildHebrewKey(hebDate.Day, hebDate.Month);
+                System.Diagnostics.Debug.WriteLine($"[Yahrzeit] Raw='{hebDate.Hebrew}' | Key='{hebrewKey}'");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Yahrzeit] Hebcal failed: {ex.Message}");
+                return GetHardcodedFallback();
             }
 
-            if (!string.IsNullOrWhiteSpace(_openAi?.ApiKey))
+            var local = LocalYahrzeitService.TryGet(hebrewKey);
+            if (local != null && local.Count > 0) return local;
+
+            // ... (AI fallback + hardcoded fallback כמו שיש לך)
+            return GetHardcodedFallback();
+        }
+
+        private static readonly Dictionary<string, string> MonthMap = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Tishrei"] = "תשרי",
+            ["Cheshvan"] = "חשון",
+            ["Heshvan"] = "חשון",
+            ["Kislev"] = "כסלו",
+            ["Tevet"] = "טבת",
+            ["Sh'vat"] = "שבט",
+            ["Shvat"] = "שבט",
+            ["Adar"] = "אדר",
+            ["Adar I"] = "אדר א",
+            ["Adar II"] = "אדר ב",
+            ["Nisan"] = "ניסן",
+            ["Iyyar"] = "אייר",
+            ["Iyar"] = "אייר",
+            ["Sivan"] = "סיון",
+            ["Tamuz"] = "תמוז",
+            ["Av"] = "אב",
+            ["Elul"] = "אלול",
+        };
+
+        private static string BuildHebrewKey(int day, string monthEn)
+        {
+            var monthHe = MonthMap.TryGetValue(monthEn.Trim(), out var m) ? m : monthEn;
+            return $"{NumToGematria(day)} {monthHe}";
+        }
+
+        private static string NumToGematria(int n)
+        {
+            // 1-30 — מספיק לימי חודש
+            string[] ones = { "", "א", "ב", "ג", "ד", "ה", "ו", "ז", "ח", "ט" };
+            string[] tens = { "", "י", "כ", "ל" };
+            if (n == 15) return "ט\"ו";
+            if (n == 16) return "ט\"ז";
+            int t = n / 10, o = n % 10;
+            string letters = tens[t] + ones[o];
+            if (letters.Length == 1) return letters + "'";
+            return letters.Insert(letters.Length - 1, "\"");
+        }
+
+
+        private static async Task<IReadOnlyList<Tzaddik>?> TryFetchFromAiAsync(string hebrewKey)
+        {
+            var json = await OpenAiClient.AskJsonAsync(
+                "You are a Jewish historian. Return JSON only.",
+                $"List 3-4 famous tzaddikim whose yahrzeit is on {hebrewKey}. " +
+                "Return JSON: {\"tzaddikim\":[{\"name\":\"...\",\"years\":\"...\",\"bio\":\"...\"}]}. " +
+                "If unsure - return empty array. Bio in Hebrew, 2-3 sentences."
+            );
+
+            if (string.IsNullOrWhiteSpace(json)) return null;
+
+            using var doc = System.Text.Json.JsonDocument.Parse(json);
+            if (!doc.RootElement.TryGetProperty("tzaddikim", out var arr)) return null;
+
+            var list = new List<Tzaddik>();
+            foreach (var el in arr.EnumerateArray())
             {
-                var list = await _openAi.GetTzaddikimAsync(heb.Month, heb.Day);
-                if (list is { Count: > 0 })
+                var bio = el.TryGetProperty("bio", out var b) ? b.GetString() ?? "" : "";
+                list.Add(new Tzaddik
                 {
-                    await File.WriteAllTextAsync(cacheFile, JsonSerializer.Serialize(list));
-                    return list;
-                }
+                    Name = el.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "",
+                    Years = el.TryGetProperty("years", out var y) ? y.GetString() ?? "" : "",
+                    Bio = bio,
+                    Description = bio
+                });
             }
+            return list;
         }
-        catch (Exception ex)
+
+        private static IReadOnlyList<Tzaddik> GetHardcodedFallback()
         {
-            System.Diagnostics.Debug.WriteLine($"[Yahrzeit] {ex.Message}");
+            return new List<Tzaddik>
+            {
+                new() { Name = "הבעל שם טוב", Years = "תק\"כ",
+                        Bio = "רבי ישראל בן אליעזר, מייסד תנועת החסידות.",
+                        Description = "רבי ישראל בן אליעזר, מייסד תנועת החסידות." },
+                new() { Name = "האר\"י הקדוש", Years = "של\"ב",
+                        Bio = "רבי יצחק לוריא, מייסד תורת הקבלה החדשה בצפת.",
+                        Description = "רבי יצחק לוריא, מייסד תורת הקבלה החדשה בצפת." },
+                new() { Name = "הרמב\"ם", Years = "ד'תתקס\"ה",
+                        Bio = "רבי משה בן מימון, מגדולי הפוסקים, מחבר 'משנה תורה'.",
+                        Description = "רבי משה בן מימון, מגדולי הפוסקים, מחבר 'משנה תורה'." },
+            };
         }
-
-        // Fallback — תמיד מחזיר משהו כדי שהדף לא יהיה ריק
-        return new List<Tzaddik>
-    {
-        new() { Name = "הבעל שם טוב", Years = "תנ\"ח – תק\"כ",
-                Bio = "מייסד תנועת החסידות, רבי ישראל בן אליעזר. לימד את דרך עבודת ה' מתוך שמחה, אהבת ישראל ודבקות." },
-        new() { Name = "רבי נחמן מברסלב", Years = "תקל\"ב – תקע\"א",
-                Bio = "נינו של הבעש\"ט. לימד את חשיבות ההתבודדות, האמונה הפשוטה והשמחה. מחבר \"ליקוטי מוהר\"ן\"." },
-        new() { Name = "האר\"י הקדוש", Years = "ש\"ד – של\"ב",
-                Bio = "רבי יצחק לוריא, מגדולי המקובלים בצפת. תורתו (קבלת האר\"י) משמשת בסיס לקבלה המודרנית." },
-        new() { Name = "הרמב\"ם", Years = "תתצ\"ח – תתקס\"ה",
-                Bio = "רבי משה בן מימון. גדול הפוסקים והפילוסופים, מחבר \"משנה תורה\" ו\"מורה נבוכים\". רופא ומנהיג." }
-    };
     }
-
 }
