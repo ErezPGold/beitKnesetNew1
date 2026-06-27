@@ -25,6 +25,14 @@ namespace BeitKnesetDisplay.Services
             }
 
             var local = LocalYahrzeitService.TryGet(hebrewKey);
+            if (local != null && local.Count > 0)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Yahrzeit] Found local data for '{hebrewKey}': {local.Count} items");
+                return local;
+            }
+
+            System.Diagnostics.Debug.WriteLine($"[Yahrzeit] No local data for '{hebrewKey}', using fallback");
+
             if (local != null && local.Count > 0) return local;
 
             // ... (AI fallback + hardcoded fallback כמו שיש לך)

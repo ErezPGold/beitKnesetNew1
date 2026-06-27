@@ -86,19 +86,79 @@ namespace BeitKnessetDisplay.Services
         /// </summary>
         private static string NormalizeKey(string input)
         {
+            if (string.IsNullOrWhiteSpace(input))
+                return "";
+
             var s = input.Trim()
-                         .Replace("\u05F3", "'")   // גרש עברי
-                         .Replace("\u05F4", "\"")  // גרשיים עבריות
+                         .Replace("\u05F3", "'")    // ׳
+                         .Replace("\u05F4", "\"")   // ״
                          .Replace("׳", "'")
-                         .Replace("״", "\"");
+                         .Replace("״", "\"")
+                         .Replace("’", "'")
+                         .Replace("`", "'");
 
-            // השאר רק יום + חודש (שתי המילים הראשונות)
             var parts = s.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length >= 2)
-                return parts[0] + " " + parts[1];
 
-            return s;
+            if (parts.Length < 2)
+                return s;
+
+            var day = NormalizeDay(parts[0]);
+            var month = NormalizeMonth(parts[1]);
+
+            return $"{day} {month}";
         }
+
+        private static string NormalizeMonth(string month)
+        {
+            return month
+                .Replace("בְּ", "")
+                .Replace("בּ", "")
+                .Replace("ב", "")
+                .Trim();
+        }
+
+        private static string NormalizeDay(string day)
+        {
+            day = day.Trim()
+                     .Replace("\"", "")
+                     .Replace("'", "");
+
+            return day switch
+            {
+                "א" => "א'",
+                "ב" => "ב'",
+                "ג" => "ג'",
+                "ד" => "ד'",
+                "ה" => "ה'",
+                "ו" => "ו'",
+                "ז" => "ז'",
+                "ח" => "ח'",
+                "ט" => "ט'",
+                "י" => "י'",
+                "יא" => "י\"א",
+                "יב" => "י\"ב",
+                "יג" => "י\"ג",
+                "יד" => "י\"ד",
+                "טו" => "ט\"ו",
+                "טז" => "ט\"ז",
+                "יז" => "י\"ז",
+                "יח" => "י\"ח",
+                "יט" => "י\"ט",
+                "כ" => "כ'",
+                "כא" => "כ\"א",
+                "כב" => "כ\"ב",
+                "כג" => "כ\"ג",
+                "כד" => "כ\"ד",
+                "כה" => "כ\"ה",
+                "כו" => "כ\"ו",
+                "כז" => "כ\"ז",
+                "כח" => "כ\"ח",
+                "כט" => "כ\"ט",
+                "ל" => "ל'",
+                _ => day
+            };
+        }
+
 
         private class TzaddikDto
         {

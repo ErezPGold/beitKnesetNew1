@@ -21,6 +21,7 @@ namespace BeitKnessetDisplay
             {
                 var tzaddikim = await YahrzeitService.GetTodayAsync();
                 _vm.SetYahrzeit(tzaddikim);
+                await _vm.LoadShabbatTimesAsync();
 
             }
             catch (Exception ex)

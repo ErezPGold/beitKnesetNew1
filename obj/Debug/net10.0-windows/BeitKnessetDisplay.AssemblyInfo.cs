@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BeitKnessetDisplay")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+819a54388e6e75bac7d578d5ec74739df77d6d31")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5d2a432bde8d1d939ecac26e973568638e9099f0")]
 [assembly: System.Reflection.AssemblyProductAttribute("BeitKnessetDisplay")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BeitKnessetDisplay")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

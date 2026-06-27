@@ -89,7 +89,7 @@ namespace BeitKnessetDisplay
 
         public static readonly IReadOnlyList<ReminderPage> Reminders = new List<ReminderPage>
         {
-            new("הכבוד לבית הכנסת",
+            new("כבוד בית הכנסת",
                 "אסור לדבר בשעת התפילה וקריאת התורה"),
             //new("נטילת ידיים לסעודה",
             //    "יש ליטול את הידיים שלוש פעמים לסירוגין על כל יד, ולברך 'על נטילת ידיים' לפני הניגוב"),
@@ -343,6 +343,28 @@ namespace BeitKnessetDisplay
             var (temp, condition) = await _weatherService.GetCurrentWeatherAsync();
             CurrentTemperature = $"{Math.Round(temp)}°C";
             WeatherCondition = condition;
+        }
+        private string _candleLighting = "--:--";
+        public string CandleLighting { get => _candleLighting; set { _candleLighting = value; OnPropertyChanged(); } }
+
+        private string _havdalah = "--:--";
+        public string Havdalah { get => _havdalah; set { _havdalah = value; OnPropertyChanged(); } }
+
+        private string _shabbatCity = "תל אביב";
+        public string ShabbatCity { get => _shabbatCity; set { _shabbatCity = value; OnPropertyChanged(); } }
+
+        public async Task LoadShabbatTimesAsync()
+        {
+            try
+            {
+                var t = await Services.ShabbatTimesService.GetAsync(293397); // תל אביב
+                CandleLighting = t.CandleLighting;
+                Havdalah = t.Havdalah;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Shabbat] {ex.Message}");
+            }
         }
 
         // 🔥 6. הפונקציה שהייתה חסרה לך! היא זו שמונעת את שגיאה CS0103
