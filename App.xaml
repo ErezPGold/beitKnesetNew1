@@ -7,7 +7,7 @@
         <ImageBrush x:Key="Bg770"
             ImageSource="pack://application:,,,/Assets/770-background.jpeg"
             Stretch="UniformToFill"
-            Opacity="0.18"
+            Opacity="0.22"
             TileMode="None" />
 
         <!-- שכבת רקע מוכנה להטמעה בכל כרטיס -->
