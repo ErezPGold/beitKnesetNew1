@@ -20,7 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\770-background.jpeg" />
+    <Resource Include="Assets\770-background.jpeg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\jerusalem-joyful.jpeg" />
     <Content Include="Data\yahrzeits.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

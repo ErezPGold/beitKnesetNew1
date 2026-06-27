@@ -405,18 +405,22 @@
                                                    FontSize="48"
                                                    HorizontalAlignment="Center"
                                                    Margin="0,10,0,20"/>
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                                            <TextBlock Text="{Binding HayomYom}"
-                                                       Style="{StaticResource LearnValue}"
-                                                       FontSize="36"
-                                                       FontStyle="Italic"
-                                                       TextWrapping="Wrap"
-                                                       TextAlignment="Center"
-                                                       HorizontalAlignment="Center"
-                                                       VerticalAlignment="Center"
-                                                       Margin="60,20,60,40"
-                                                       LineHeight="56"/>            
-                                        </ScrollViewer>
+                                        <Grid Margin="50,10,50,35">
+                                            <Viewbox Stretch="Uniform"
+                                                     StretchDirection="DownOnly"
+                                                     HorizontalAlignment="Center"
+                                                     VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding HayomYom}"
+                                                           Style="{StaticResource LearnValue}"
+                                                           Width="1450"
+                                                           FontSize="42"
+                                                           FontStyle="Italic"
+                                                           TextWrapping="Wrap"
+                                                           TextAlignment="Center"
+                                                           LineHeight="58"/>
+                                            </Viewbox>
+                                        </Grid>
+
                                     </DockPanel>
                                 </Border>
                             </Grid>

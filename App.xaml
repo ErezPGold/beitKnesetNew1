@@ -4,6 +4,32 @@
              xmlns:local="clr-namespace:BeitKnessetDisplay"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ImageBrush x:Key="Bg770"
+            ImageSource="pack://application:,,,/Assets/770-background.jpeg"
+            Stretch="UniformToFill"
+            Opacity="0.18"
+            TileMode="None" />
+
+        <!-- שכבת רקע מוכנה להטמעה בכל כרטיס -->
+        <Style x:Key="CardWith770" TargetType="Border">
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="BorderBrush" Value="#D4AF37"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Padding" Value="18"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Background">
+                <Setter.Value>
+                    <ImageBrush ImageSource="pack://application:,,,/Assets/770-background.jpeg"
+                        Stretch="UniformToFill"
+                        Opacity="0.18"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#000000" BlurRadius="14" ShadowDepth="3" Opacity="0.45"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Application.Resources>
 </Application>
