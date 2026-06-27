@@ -428,7 +428,13 @@ namespace BeitKnessetDisplay
             ArukhHaShulchan = _sefaria.Get("Arukh HaShulchan Yomi", "");
 
 
-            HayomYom = _learning.GetHayomYom(now);
+            //HayomYom = _learning.GetHayomYom(now);
+
+            var hayomYomQuote = await BeitKnessetDisplay.Services.HayomYomService.GetTodayQuoteAsync();
+            HayomYom = string.IsNullOrWhiteSpace(hayomYomQuote)
+                ? _learning.GetHayomYom(now)   // fallback אם הקריאה נכשלה
+                : hayomYomQuote;
+
             if (_jewish.IsShabbatMevarchim(now, out _, out var monthName))
             {
                 IsShabbatMevarchim = true;

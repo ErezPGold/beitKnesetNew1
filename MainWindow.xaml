@@ -264,7 +264,14 @@
                                         <DockPanel>
                                             <TextBlock DockPanel.Dock="Top" Text="✡ היום יום" Style="{StaticResource LearnLabel}"/>
                                             <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                <TextBlock Text="{Binding HayomYom}" Style="{StaticResource LearnValue}" MaxWidth="500" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding HayomYom}"
+                                                           Style="{StaticResource LearnValue}"
+                                                           MaxWidth="700"
+                                                           TextWrapping="Wrap"
+                                                           TextAlignment="Center"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"
+                                                           FontStyle="Italic"/>
                                             </Viewbox>
                                         </DockPanel>
                                     </Border>
