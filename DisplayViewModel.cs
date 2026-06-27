@@ -435,9 +435,16 @@ namespace BeitKnessetDisplay
             //HayomYom = _learning.GetHayomYom(now);
 
             var hayomYomQuote = await BeitKnessetDisplay.Services.HayomYomService.GetTodayQuoteAsync();
-            HayomYom = string.IsNullOrWhiteSpace(hayomYomQuote)
-                ? "פתגם היום יום לא זמין כעת"   // fallback אם הקריאה נכשלה
-                : hayomYomQuote;
+
+            if (!string.IsNullOrWhiteSpace(hayomYomQuote))
+            {
+                HayomYom = hayomYomQuote;
+            }
+            else if (string.IsNullOrWhiteSpace(HayomYom))
+            {
+                HayomYom = "פתגם היום יום נטען...";
+            }
+
 
             if (_jewish.IsShabbatMevarchim(now, out _, out var monthName))
             {

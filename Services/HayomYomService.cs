@@ -1,7 +1,10 @@
 ﻿using System;
-using System.Globalization;
+using System.IO;
+using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BeitKnessetDisplay.Services
@@ -9,101 +12,196 @@ namespace BeitKnessetDisplay.Services
     public static class HayomYomService
     {
         private static readonly HttpClient _http = new();
+        private static readonly SemaphoreSlim _gate = new(1, 1);
+
+        private static string? _memoryDate;
+        private static string? _memoryQuote;
+        private static DateTime _nextAllowedRequestUtc = DateTime.MinValue;
+
+        private static string TodayKey => DateTime.Now.ToString("yyyy-MM-dd");
+
+        private static string CacheFile
+        {
+            get
+            {
+                var dir = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "BeitKnesetBoard",
+                    "Cache");
+
+                Directory.CreateDirectory(dir);
+                return Path.Combine(dir, "hayom-yom.json");
+            }
+        }
 
         public static async Task<string> GetTodayQuoteAsync()
         {
+            var today = TodayKey;
+
+            // 1. זיכרון פנימי — הכי מהיר
+            if (_memoryDate == today && !string.IsNullOrWhiteSpace(_memoryQuote))
+                return _memoryQuote;
+
+            // 2. Cache מקומי מהדיסק
+            var cached = await ReadCacheAsync();
+            if (cached != null &&
+                cached.Date == today &&
+                !string.IsNullOrWhiteSpace(cached.Quote))
+            {
+                _memoryDate = cached.Date;
+                _memoryQuote = cached.Quote;
+                return cached.Quote;
+            }
+
+            // 3. אם קיבלנו 429 לאחרונה — לא מנסים שוב ושוב
+            if (DateTime.UtcNow < _nextAllowedRequestUtc)
+                return "";
+
+            await _gate.WaitAsync();
+
             try
             {
-                var today = DateTime.Today;
-                var tdate = today.ToString("M/d/yyyy", CultureInfo.InvariantCulture);
+                // בדיקה חוזרת אחרי שנכנסנו ל־lock
+                if (_memoryDate == today && !string.IsNullOrWhiteSpace(_memoryQuote))
+                    return _memoryQuote;
 
-                var sourceUrl = $"https://he.chabad.org/dailystudy/hayomyom.asp?tdate={tdate}";
-                var url = "https://r.jina.ai/http://" + sourceUrl;
+                cached = await ReadCacheAsync();
+                if (cached != null &&
+                    cached.Date == today &&
+                    !string.IsNullOrWhiteSpace(cached.Quote))
+                {
+                    _memoryDate = cached.Date;
+                    _memoryQuote = cached.Quote;
+                    return cached.Quote;
+                }
 
-                var markdown = await _http.GetStringAsync(url);
+                var url = "https://www.chabad.org/calendar/view/day_cdo/aid/2263399/jewish/Hayom-Yom.htm";
 
-                var quote = ExtractQuote(markdown);
+                using var request = new HttpRequestMessage(HttpMethod.Get, url);
+                request.Headers.UserAgent.ParseAdd("Mozilla/5.0 BeitKnesetBoard/1.0");
 
-                return string.IsNullOrWhiteSpace(quote) ? "" : quote;
+                using var response = await _http.SendAsync(request);
+
+                if (response.StatusCode == HttpStatusCode.TooManyRequests)
+                {
+                    _nextAllowedRequestUtc = DateTime.UtcNow.Add(GetRetryDelay(response));
+                    System.Diagnostics.Debug.WriteLine("[HayomYom] 429 Too Many Requests. Waiting before next try.");
+                    return "";
+                }
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    _nextAllowedRequestUtc = DateTime.UtcNow.AddMinutes(15);
+                    System.Diagnostics.Debug.WriteLine($"[HayomYom] HTTP {(int)response.StatusCode} {response.ReasonPhrase}");
+                    return "";
+                }
+
+                var html = await response.Content.ReadAsStringAsync();
+                var quote = ExtractQuote(html);
+
+                if (string.IsNullOrWhiteSpace(quote))
+                {
+                    _nextAllowedRequestUtc = DateTime.UtcNow.AddMinutes(30);
+                    return "";
+                }
+
+                _memoryDate = today;
+                _memoryQuote = quote;
+
+                await WriteCacheAsync(new HayomYomCache
+                {
+                    Date = today,
+                    Quote = quote
+                });
+
+                return quote;
             }
             catch (Exception ex)
             {
+                _nextAllowedRequestUtc = DateTime.UtcNow.AddMinutes(15);
                 System.Diagnostics.Debug.WriteLine($"[HayomYom] {ex.Message}");
                 return "";
             }
+            finally
+            {
+                _gate.Release();
+            }
         }
 
-        private static string ExtractQuote(string markdown)
+        private static TimeSpan GetRetryDelay(HttpResponseMessage response)
         {
-            if (string.IsNullOrWhiteSpace(markdown))
-                return "";
+            var retryAfter = response.Headers.RetryAfter;
 
-            var lines = markdown
-                .Replace("\r", "")
-                .Split('\n');
+            if (retryAfter?.Delta != null)
+                return retryAfter.Delta.Value;
 
-            var startIndex = -1;
-
-            for (var i = 0; i < lines.Length; i++)
+            if (retryAfter?.Date != null)
             {
-                var line = CleanLine(lines[i]);
-
-                if (line.StartsWith("**שיעורים:**") || line.StartsWith("שיעורים:"))
-                {
-                    startIndex = i;
-                    break;
-                }
+                var delay = retryAfter.Date.Value.UtcDateTime - DateTime.UtcNow;
+                if (delay > TimeSpan.Zero)
+                    return delay;
             }
 
-            if (startIndex < 0)
-                return "";
-
-            var result = "";
-
-            for (var i = startIndex; i < lines.Length; i++)
-            {
-                var line = CleanLine(lines[i]);
-
-                if (string.IsNullOrWhiteSpace(line))
-                    continue;
-
-                if (line.Contains("אודות הספר") ||
-                    line.Contains("HaYom Yom") ||
-                    line.Contains("לרכישת הספר") ||
-                    line.StartsWith("שבת ") ||
-                    line.StartsWith("ראשון ") ||
-                    line.StartsWith("שני ") ||
-                    line.StartsWith("שלישי ") ||
-                    line.StartsWith("רביעי ") ||
-                    line.StartsWith("חמישי ") ||
-                    line.StartsWith("שישי "))
-                {
-                    if (result.Length > 80)
-                        break;
-                }
-
-                result += line + " ";
-            }
-
-            result = Regex.Replace(result, @"\s+", " ").Trim();
-
-            if (result.Length > 520)
-                result = result.Substring(0, 520).Trim() + "…";
-
-            return result;
+            return TimeSpan.FromMinutes(30);
         }
 
-        private static string CleanLine(string line)
+        private static string ExtractQuote(string html)
         {
-            if (string.IsNullOrWhiteSpace(line))
+            var m = Regex.Match(
+                html,
+                @"<div[^>]*class=""[^""]*(?:Co_Body|article-body|co_body)[^""]*""[^>]*>(.*?)</div>",
+                RegexOptions.Singleline | RegexOptions.IgnoreCase);
+
+            if (!m.Success)
                 return "";
 
-            line = Regex.Replace(line, @"!\[[^\]]*\]\([^)]+\)", "");
-            line = Regex.Replace(line, @"\[(.*?)\]\([^)]+\)", "$1");
-            line = line.Replace("**", "");
-            line = Regex.Replace(line, @"\s+", " ").Trim();
+            var text = Regex.Replace(m.Groups[1].Value, "<.*?>", " ");
+            text = WebUtility.HtmlDecode(text);
+            text = Regex.Replace(text, @"\s+", " ").Trim();
 
-            return line;
+            if (text.Length > 900)
+                text = text.Substring(0, 900) + "…";
+
+            return text;
+        }
+
+        private static async Task<HayomYomCache?> ReadCacheAsync()
+        {
+            try
+            {
+                if (!File.Exists(CacheFile))
+                    return null;
+
+                var json = await File.ReadAllTextAsync(CacheFile);
+                return JsonSerializer.Deserialize<HayomYomCache>(json);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static async Task WriteCacheAsync(HayomYomCache cache)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(cache, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+                await File.WriteAllTextAsync(CacheFile, json);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[HayomYom Cache] {ex.Message}");
+            }
+        }
+
+        private sealed class HayomYomCache
+        {
+            public string? Date { get; set; }
+            public string? Quote { get; set; }
         }
     }
 }

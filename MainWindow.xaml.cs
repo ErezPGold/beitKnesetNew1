@@ -30,6 +30,17 @@ namespace BeitKnessetDisplay
             }
         }
 
+        private async Task RefreshAllSafeAsync()
+        {
+            try
+            {
+                await _vm.RefreshAll();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[RefreshAll] " + ex.Message);
+            }
+        }
 
         public MainWindow()
         {
@@ -38,15 +49,19 @@ namespace BeitKnessetDisplay
 
             _ = _vm.RefreshAll();
 
-            // שעון — מתעדכן כל שנייה
+            // טעינה ראשונית
+            _ = RefreshAllSafeAsync();
+
+            // שעון — רק שעה, כל שנייה
             _clockTimer.Interval = TimeSpan.FromSeconds(1);
-            _clockTimer.Tick += async (_, _) => await _vm.RefreshAll();
+            _clockTimer.Tick += (_, _) => _vm.RefreshClock();
             _clockTimer.Start();
 
-            // רענון תוכן יומי כל דקה (תאריך/זמנים מתעדכן בחצות)
-            _refreshTimer.Interval = TimeSpan.FromMinutes(1);
-            _refreshTimer.Tick += async (_, _) => await _vm.RefreshAll();
+            // רענון תוכן — לא כל שנייה
+            _refreshTimer.Interval = TimeSpan.FromMinutes(30);
+            _refreshTimer.Tick += async (_, _) => await RefreshAllSafeAsync();
             _refreshTimer.Start();
+
 
             // החלפת עמודים בלולאה
             // החלפת עמודים בלולאה - משך משתנה לפי סוג הדף
