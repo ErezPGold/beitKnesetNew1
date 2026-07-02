@@ -148,8 +148,8 @@ namespace BeitKnessetDisplay
 
 
         // משך הצגה של כל עמוד (שניות)
-        public const int DashboardDurationSeconds = 5;
-        public const int OtherPageDurationSeconds = 1;
+        public const int DashboardDurationSeconds = 15;
+        public const int OtherPageDurationSeconds = 3;
         
         // במקום השורה הקיימת public bool IsYahrzeitVisible => _pageIndex == 6;
         private bool _isYahrzeitVisible = false;

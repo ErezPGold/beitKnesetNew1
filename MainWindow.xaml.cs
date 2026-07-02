@@ -45,6 +45,8 @@ namespace BeitKnessetDisplay
         public MainWindow()
         {
             InitializeComponent();
+            SleepPreventer.PreventSleep();
+
             DataContext = _vm;
 
             // טעינה ראשונית
@@ -74,7 +76,12 @@ namespace BeitKnessetDisplay
             // טעינת ימי הזיכרון פעם ביום
             _ = LoadYahrzeitAsync();
 
-
         }
+        protected override void OnClosed(EventArgs e)
+        {
+            SleepPreventer.AllowSleep();
+            base.OnClosed(e);
+        }
+
     }
 }
