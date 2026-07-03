@@ -144,7 +144,6 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <!-- ===== HEADER ===== -->
@@ -220,7 +219,7 @@
                         <!-- ===== CONTENT ===== -->
                         <Grid Grid.Row="1">
 
-                            <!-- ===== דשבורד לימוד ===== -->
+                            <!-- ===== דשבורד: זמני היום בצדדים + 2 כרטיסים גדולים במרכז ===== -->
                             <Grid>
                                 <Grid.Style>
                                     <Style TargetType="Grid">
@@ -233,219 +232,76 @@
                                     </Style>
                                 </Grid.Style>
 
-                                <!-- עמוד 1: 3x2 -->
-                                <UniformGrid Columns="3" Rows="2">
-                                    <UniformGrid.Style>
-                                        <Style TargetType="UniformGrid">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsLearningPage1}" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </UniformGrid.Style>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="📖 תהילים יומי" Style="{StaticResource LearnLabel}"/>
-                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                <TextBlock Text="{Binding Tehillim}" Style="{StaticResource LearnValue}" MaxWidth="500" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Viewbox>
-                                        </DockPanel>
-                                    </Border>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="📜 חומש (עליה יומית)" Style="{StaticResource LearnLabel}"/>
-                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                <TextBlock Text="{Binding Chumash}" Style="{StaticResource LearnValue}" MaxWidth="500" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Viewbox>
-                                        </DockPanel>
-                                    </Border>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="📚 דף יומי" Style="{StaticResource LearnLabel}"/>
-                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                <TextBlock Text="{Binding DafYomi}" Style="{StaticResource LearnValue}" MaxWidth="500" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Viewbox>
-                                        </DockPanel>
-                                    </Border>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="📚 רמב״ם (ג׳ פרקים)" Style="{StaticResource LearnLabel}"/>
-                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                <TextBlock Text="{Binding Rambam}" Style="{StaticResource LearnValue}" MaxWidth="500" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Viewbox>
-                                        </DockPanel>
-                                    </Border>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="📖 תניא יומי" Style="{StaticResource LearnLabel}"/>
-                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                <TextBlock Text="{Binding Tanya}" Style="{StaticResource LearnValue}" MaxWidth="500" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Viewbox>
-                                        </DockPanel>
-                                    </Border>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="📚 רמב״ם (פרק אחד)" Style="{StaticResource LearnLabel}"/>
-                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                <TextBlock Text="{Binding Rambam1Perek}" Style="{StaticResource LearnValue}"
-                                                            MaxWidth="500" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Viewbox>
-                                        </DockPanel>
-                                    </Border>
-                                </UniformGrid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="280"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="280"/>
+                                </Grid.ColumnDefinitions>
 
-                                <!-- עמוד 2 -->
-                                <UniformGrid Columns="3" Rows="2">
-                                    <UniformGrid.Style>
-                                        <Style TargetType="UniformGrid">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsLearningPage2}" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </UniformGrid.Style>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="📜 משנה יומית" Style="{StaticResource LearnLabel}"/>
-                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                <TextBlock Text="{Binding Mishna}" Style="{StaticResource LearnValue}" MaxWidth="500" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Viewbox>
-                                        </DockPanel>
-                                    </Border>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="📜 ירושלמי יומי" Style="{StaticResource LearnLabel}"/>
-                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                <TextBlock Text="{Binding Yerushalmi}" Style="{StaticResource LearnValue}" MaxWidth="500" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Viewbox>
-                                        </DockPanel>
-                                    </Border>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="⚖ הלכה יומית" Style="{StaticResource LearnLabel}"/>
-                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                <TextBlock Text="{Binding Halakha}" Style="{StaticResource LearnValue}" MaxWidth="500" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Viewbox>
-                                        </DockPanel>
-                                    </Border>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="📖 תנ״ך יומי" Style="{StaticResource LearnLabel}"/>
-                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                <TextBlock Text="{Binding TanakhYomi}" Style="{StaticResource LearnValue}" MaxWidth="500" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Viewbox>
-                                        </DockPanel>
-                                    </Border>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="✡ 929" Style="{StaticResource LearnLabel}"/>
-                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                <TextBlock Text="{Binding Yom929}" Style="{StaticResource LearnValue}" MaxWidth="500" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Viewbox>
-                                        </DockPanel>
-                                    </Border>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="📚 חק לישראל" Style="{StaticResource LearnLabel}"/>
-                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                <TextBlock Text="{Binding ChokLeYisrael}" Style="{StaticResource LearnValue}" MaxWidth="500" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Viewbox>
-                                        </DockPanel>
-                                    </Border>
-                                </UniformGrid>
-
-                                <!-- עמוד 3 -->
-                                <UniformGrid Columns="2" Rows="2">
-                                    <UniformGrid.Style>
-                                        <Style TargetType="UniformGrid">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsLearningPage3}" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </UniformGrid.Style>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="📚 רמב״ם (פרק אחד)" Style="{StaticResource LearnLabel}"/>
-                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                <TextBlock Text="{Binding Rambam1Perek}" Style="{StaticResource LearnValue}" MaxWidth="700" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Viewbox>
-                                        </DockPanel>
-                                    </Border>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="⚖ ערוך השולחן היומי" Style="{StaticResource LearnLabel}"/>
-                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                <TextBlock Text="{Binding ArukhHaShulchan}" Style="{StaticResource LearnValue}" MaxWidth="700" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Viewbox>
-                                        </DockPanel>
-                                    </Border>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="🌧 משיב הרוח / מוריד הטל" Style="{StaticResource LearnLabel}"/>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                    <TextBlock Text="{Binding GeshemText}" Style="{StaticResource LearnValue}" MaxWidth="600" HorizontalAlignment="Center"/>
-                                                </Viewbox>
-                                                <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="10">
-                                                    <TextBlock Text="{Binding TalText}" Style="{StaticResource LearnValue}" MaxWidth="600" HorizontalAlignment="Center"/>
-                                                </Viewbox>
-                                            </StackPanel>
-                                        </DockPanel>
-                                    </Border>
-                                    <Border Style="{StaticResource AnimatedCard}">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="🌙 שבת מברכים" Style="{StaticResource LearnLabel}"/>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding ShabbatMevarchimText}" Style="{StaticResource LearnValue}"/>
-                                                <TextBlock Text="{Binding MoladText}" Style="{StaticResource LearnValue}" Margin="0,10,0,0"/>
-                                            </StackPanel>
-                                        </DockPanel>
-                                    </Border>
-                                </UniformGrid>
-                            </Grid>
-                            <!-- עמוד 4 — היום יום במסך מלא -->
-                            <Grid>
-                                <Grid.Style>
-                                    <Style TargetType="Grid">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsLearningPage4}" Value="True">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Grid.Style>
-                                <Border Style="{StaticResource AnimatedCard}" Margin="20">
+                                <!-- צד ימין: זמני היום -->
+                                <Border Grid.Column="0" Background="#F6EFD8" BorderBrush="#B8842D" BorderThickness="2" CornerRadius="14" Padding="12" Margin="0,10,10,10">
                                     <DockPanel>
-                                        <TextBlock DockPanel.Dock="Top"
-                                                   Text="✡ היום יום"
-                                                   Style="{StaticResource LearnLabel}"
-                                                   FontSize="48"
-                                                   HorizontalAlignment="Center"
-                                                   Margin="0,10,0,20"/>
-                                        <Grid Margin="50,10,50,35">
-                                            <Viewbox Stretch="Uniform"
-                                                     StretchDirection="DownOnly"
-                                                     HorizontalAlignment="Center"
-                                                     VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding HayomYom}"
-                                                           Style="{StaticResource LearnValue}"
-                                                           Width="1450"
-                                                           FontSize="42"
-                                                           FontStyle="Italic"
-                                                           TextWrapping="Wrap"
-                                                           TextAlignment="Center"
-                                                           LineHeight="58"/>
-                                            </Viewbox>
-                                        </Grid>
+                                        <TextBlock DockPanel.Dock="Top" Text="זמני היום" FontSize="32" FontWeight="Bold" Foreground="#52330E" TextAlignment="Center" Margin="0,0,0,10"/>
+                                        <ItemsControl ItemsSource="{Binding RightZmanim}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="#FFF9EA" BorderBrush="#D7AD55" BorderThickness="1" CornerRadius="10" Padding="8" Margin="0,5">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="23" FontWeight="SemiBold" Foreground="#53320B" TextWrapping="Wrap"/>
+                                                            <TextBlock Grid.Column="1" Text="{Binding Time}" FontSize="29" FontWeight="Bold" Foreground="#0B4F6C" FlowDirection="LeftToRight" Margin="10,0,0,0"/>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </DockPanel>
+                                </Border>
 
+                                <!-- מרכז: מקסימום 2 כרטיסים גדולים -->
+                                <UniformGrid Grid.Column="1" Columns="1" Rows="2" Margin="8,8">
+                                    <Border BorderBrush="#C29B35" BorderThickness="3" CornerRadius="18" Padding="26" Margin="8" Background="#FFF7DF">
+                                        <DockPanel LastChildFill="True">
+                                            <TextBlock DockPanel.Dock="Top" Text="{Binding LearningTitle1}" FontSize="50" FontWeight="Bold" Foreground="#52330E" TextAlignment="Center" Margin="0,0,0,14"/>
+                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="8">
+                                                <TextBlock Text="{Binding LearningBody1}" Width="980" FontSize="58" FontWeight="Bold" Foreground="#102A43" TextWrapping="Wrap" TextAlignment="Center" LineHeight="72"/>
+                                            </Viewbox>
+                                        </DockPanel>
+                                    </Border>
+
+                                    <Border BorderBrush="#8AA98A" BorderThickness="3" CornerRadius="18" Padding="26" Margin="8" Background="#F0F7EA">
+                                        <DockPanel LastChildFill="True">
+                                            <TextBlock DockPanel.Dock="Top" Text="{Binding LearningTitle2}" FontSize="50" FontWeight="Bold" Foreground="#29422A" TextAlignment="Center" Margin="0,0,0,14"/>
+                                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="8">
+                                                <TextBlock Text="{Binding LearningBody2}" Width="980" FontSize="58" FontWeight="Bold" Foreground="#102A43" TextWrapping="Wrap" TextAlignment="Center" LineHeight="72"/>
+                                            </Viewbox>
+                                        </DockPanel>
+                                    </Border>
+                                </UniformGrid>
+
+                                <!-- צד שמאל: המשך זמני היום -->
+                                <Border Grid.Column="2" Background="#EAF4F6" BorderBrush="#5E9CAF" BorderThickness="2" CornerRadius="14" Padding="12" Margin="10,10,0,10">
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Top" Text="המשך זמנים" FontSize="32" FontWeight="Bold" Foreground="#143D4A" TextAlignment="Center" Margin="0,0,0,10"/>
+                                        <ItemsControl ItemsSource="{Binding LeftZmanim}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="#F8FEFF" BorderBrush="#9DC7D3" BorderThickness="1" CornerRadius="10" Padding="8" Margin="0,5">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="23" FontWeight="SemiBold" Foreground="#143D4A" TextWrapping="Wrap"/>
+                                                            <TextBlock Grid.Column="1" Text="{Binding Time}" FontSize="29" FontWeight="Bold" Foreground="#8A4B0F" FlowDirection="LeftToRight" Margin="10,0,0,0"/>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
                                     </DockPanel>
                                 </Border>
                             </Grid>
@@ -576,30 +432,6 @@
                                 </StackPanel>
                             </Border>
                         </Grid>
-
-                        <!-- ===== ZMANIM BAR ===== -->
-                        <Border Grid.Row="2" Style="{StaticResource Card}" Padding="16,12">
-                            <ItemsControl ItemsSource="{Binding Zmanim}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Rows="1"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Margin="10,4" HorizontalAlignment="Center">
-                                            <TextBlock Text="{Binding Name}" 
-                                                       Style="{StaticResource Label}" 
-                                                       FontSize="24"/>
-                                            <TextBlock Text="{Binding Time}" 
-                                                       Style="{StaticResource Value}" 
-                                                       FontSize="34" 
-                                                       FontWeight="Bold"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </Border>
 
                     </Grid>
                 </Grid>

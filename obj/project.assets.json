@@ -83,11 +83,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\visualStudioPrjs\\BeitKnessetDisplay\\BeitKnessetDisplay\\BeitKnessetDisplay.csproj",
+      "projectUniqueName": "D:\\visualStudioPrjs\\‏‏BeitKnessetDisplay - עותק\\BeitKnessetDisplay\\BeitKnessetDisplay.csproj",
       "projectName": "BeitKnessetDisplay",
-      "projectPath": "D:\\visualStudioPrjs\\BeitKnessetDisplay\\BeitKnessetDisplay\\BeitKnessetDisplay.csproj",
+      "projectPath": "D:\\visualStudioPrjs\\‏‏BeitKnessetDisplay - עותק\\BeitKnessetDisplay\\BeitKnessetDisplay.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "D:\\visualStudioPrjs\\BeitKnessetDisplay\\BeitKnessetDisplay\\obj\\",
+      "outputPath": "D:\\visualStudioPrjs\\‏‏BeitKnessetDisplay - עותק\\BeitKnessetDisplay\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

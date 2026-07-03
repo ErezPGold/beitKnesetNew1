@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 namespace BeitKnessetDisplay
 {
     public record ReminderPage(string Title, string Body);
+    public record LearningCard(string Title, string Body);
 
     public class DisplayViewModel : INotifyPropertyChanged
     {
@@ -57,6 +58,9 @@ namespace BeitKnessetDisplay
                 Years = "ד׳תתצ״ח – ד׳תתקס״ה",
                 Description = "רבי משה בן מימון, מגדולי הפוסקים. חיבר את משנה תורה ומורה נבוכים."
             });
+
+            Zmanim = GetZmanimSafe();
+            UpdateLearningCards();
         }
 
         private readonly PrayerService _prayerService = new();
@@ -67,7 +71,8 @@ namespace BeitKnessetDisplay
         private readonly SefariaService _sefaria = new SefariaService();
         private readonly ParashaSummaryService _parashaSummary = new ParashaSummaryService();
 
-        private int _learningPage = 0;          // 0,1,2,3
+        private const int LearningPageCount = 11;
+        private int _learningPage = 0;
         private bool _isLearningPage1 = true;
         private bool _isLearningPage2 = false;
         private bool _isLearningPage3 = false;
@@ -80,11 +85,9 @@ namespace BeitKnessetDisplay
 
         public void AdvanceLearningPage()
         {
-            _learningPage = (_learningPage + 1) % 4;
-            IsLearningPage1 = _learningPage == 0;
-            IsLearningPage2 = _learningPage == 1;
-            IsLearningPage3 = _learningPage == 2;
-            IsLearningPage4 = _learningPage == 3;
+            _learningPage = (_learningPage + 1) % LearningPageCount;
+            UpdateLearningPageFlags();
+            UpdateLearningCards();
         }
 
 
@@ -148,8 +151,8 @@ namespace BeitKnessetDisplay
 
 
         // משך הצגה של כל עמוד (שניות)
-        public const int DashboardDurationSeconds = 15;
-        public const int OtherPageDurationSeconds = 3;
+        public const int DashboardDurationSeconds = 8;
+        public const int OtherPageDurationSeconds = 5;
         
         // במקום השורה הקיימת public bool IsYahrzeitVisible => _pageIndex == 6;
         private bool _isYahrzeitVisible = false;
@@ -159,8 +162,8 @@ namespace BeitKnessetDisplay
         /// </summary>
         public void AdvancePage()
         {
-            // דשבורד (1) + תזכורות (R) + תפילות (1) + רפואה (1) + נשמה (1) + הילולא (1)
-            int total = 1 + Reminders.Count + 1 + 1 + 1 + 1;
+            // כל דפי הלימוד במרכז + תזכורות + תפילות + רפואה + נשמה + הילולא
+            int total = LearningPageCount + Reminders.Count + 1 + 1 + 1 + 1;
             _pageIndex = (_pageIndex + 1) % total;
 
             IsDashboardVisible = false;
@@ -172,28 +175,35 @@ namespace BeitKnessetDisplay
 
             int idx = _pageIndex;
 
-            if (idx == 0)
+            if (idx < LearningPageCount)
             {
+                _learningPage = idx;
+                UpdateLearningPageFlags();
+                UpdateLearningCards();
                 IsDashboardVisible = true;
-                AdvanceLearningPage();
+                OnPropertyChanged(nameof(CurrentPageDurationSeconds));
+                return;
             }
-            else if (idx >= 1 && idx <= Reminders.Count)
+
+            idx -= LearningPageCount;
+
+            if (idx >= 0 && idx < Reminders.Count)
             {
-                var r = Reminders[idx - 1];
+                var r = Reminders[idx];
                 ReminderTitle = r.Title;
                 ReminderBody = r.Body;
                 IsReminderVisible = true;
             }
-            else if (idx == Reminders.Count + 1)
+            else if (idx == Reminders.Count)
             {
                 IsPrayerTimesVisible = true;
             }
-            else if (idx == Reminders.Count + 2)
+            else if (idx == Reminders.Count + 1)
             {
                 RefuahList = RefuahNames;
                 IsRefuahVisible = true;
             }
-            else if (idx == Reminders.Count + 3)
+            else if (idx == Reminders.Count + 2)
             {
                 NeshamaList = NeshamaNames;
                 IsNeshamaVisible = true;
@@ -249,6 +259,9 @@ namespace BeitKnessetDisplay
         private bool _isPrayerTimesVisible = false;
         private IReadOnlyList<string> _refuahList = Array.Empty<string>();
         private IReadOnlyList<string> _neshamaList = Array.Empty<string>();
+        private IReadOnlyList<ZmanItem> _rightZmanim = Array.Empty<ZmanItem>();
+        private IReadOnlyList<ZmanItem> _leftZmanim = Array.Empty<ZmanItem>();
+        private string _learningTitle1 = "", _learningBody1 = "", _learningTitle2 = "", _learningBody2 = "";
 
         public string Clock { get => _clock; set => Set(ref _clock, value); }
         public string GregorianDate { get => _gregorianDate; set => Set(ref _gregorianDate, value); }
@@ -266,7 +279,18 @@ namespace BeitKnessetDisplay
         public string GeshemText { get => _geshemText; set => Set(ref _geshemText, value); }
         public string TalText { get => _talText; set => Set(ref _talText, value); }
         public bool IsShabbatMevarchim { get => _isShabbatMevarchim; set => Set(ref _isShabbatMevarchim, value); }
-        public IReadOnlyList<ZmanItem> Zmanim { get => _zmanimList; set => Set(ref _zmanimList, value); }
+        public IReadOnlyList<ZmanItem> Zmanim
+        {
+            get => _zmanimList;
+            set
+            {
+                var safeValue = value ?? Array.Empty<ZmanItem>();
+                Set(ref _zmanimList, safeValue);
+                SplitZmanimForSides(safeValue);
+            }
+        }
+        public IReadOnlyList<ZmanItem> RightZmanim { get => _rightZmanim; set => Set(ref _rightZmanim, value); }
+        public IReadOnlyList<ZmanItem> LeftZmanim { get => _leftZmanim; set => Set(ref _leftZmanim, value); }
 
         public string ReminderTitle { get => _reminderTitle; set => Set(ref _reminderTitle, value); }
         public string ReminderBody { get => _reminderBody; set => Set(ref _reminderBody, value); }
@@ -277,6 +301,10 @@ namespace BeitKnessetDisplay
         public bool IsPrayerTimesVisible { get => _isPrayerTimesVisible; set => Set(ref _isPrayerTimesVisible, value); }
         public IReadOnlyList<string> RefuahList { get => _refuahList; set => Set(ref _refuahList, value); }
         public IReadOnlyList<string> NeshamaList { get => _neshamaList; set => Set(ref _neshamaList, value); }
+        public string LearningTitle1 { get => _learningTitle1; set => Set(ref _learningTitle1, value); }
+        public string LearningBody1 { get => _learningBody1; set => Set(ref _learningBody1, value); }
+        public string LearningTitle2 { get => _learningTitle2; set => Set(ref _learningTitle2, value); }
+        public string LearningBody2 { get => _learningBody2; set => Set(ref _learningBody2, value); }
 
         public void RefreshClock() => Clock = DateTime.Now.ToString("HH:mm:ss");
         
@@ -363,6 +391,87 @@ namespace BeitKnessetDisplay
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private IReadOnlyList<ZmanItem> GetZmanimSafe()
+        {
+            try
+            {
+                var list = _zmanim.GetTodayZmanim();
+                return list.Count > 0 ? list : GetZmanimLoadingFallback();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[Zmanim] " + ex.Message);
+                return GetZmanimLoadingFallback();
+            }
+        }
+
+        private static IReadOnlyList<ZmanItem> GetZmanimLoadingFallback() => new List<ZmanItem>
+        {
+            new("עלות השחר", "טוען"),
+            new("נץ החמה", "טוען"),
+            new("סוף זמן ק\"ש", "טוען"),
+            new("סוף זמן תפילה", "טוען"),
+            new("חצות", "טוען"),
+            new("מנחה גדולה", "טוען"),
+            new("מנחה קטנה", "טוען"),
+            new("שקיעה", "טוען"),
+            new("צאת הכוכבים", "טוען")
+        };
+
+        private void SplitZmanimForSides(IReadOnlyList<ZmanItem> list)
+        {
+            var right = new List<ZmanItem>();
+            var left = new List<ZmanItem>();
+            int middle = (list.Count + 1) / 2;
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (i < middle) right.Add(list[i]);
+                else left.Add(list[i]);
+            }
+
+            RightZmanim = right;
+            LeftZmanim = left;
+        }
+
+        private static string VisibleOrDash(string value) =>
+            string.IsNullOrWhiteSpace(value) ? "—" : value;
+
+        private static string VisibleOrLoading(string value) =>
+            string.IsNullOrWhiteSpace(value) || value == "—" ? "טוען..." : value;
+
+        private void UpdateLearningPageFlags()
+        {
+            IsLearningPage1 = _learningPage == 0;
+            IsLearningPage2 = _learningPage == 1;
+            IsLearningPage3 = _learningPage == 2;
+            IsLearningPage4 = _learningPage == 3;
+        }
+
+        private void UpdateLearningCards()
+        {
+            var pages = new List<(LearningCard First, LearningCard Second)>
+            {
+                (new("📖 תהילים יומי", Tehillim), new("📜 חומש - עליה יומית", Chumash)),
+                (new("📚 דף יומי", DafYomi), new("📚 רמב״ם - ג׳ פרקים", Rambam)),
+                (new("📖 תניא יומי", Tanya), new("📚 רמב״ם - פרק אחד", Rambam1Perek)),
+                (new("📜 משנה יומית", Mishna), new("📜 ירושלמי יומי", Yerushalmi)),
+                (new("⚖ הלכה יומית", Halakha), new("📖 תנ״ך יומי", TanakhYomi)),
+                (new("✡ 929", Yom929), new("📚 חק לישראל", ChokLeYisrael)),
+                (new("⚖ ערוך השולחן היומי", ArukhHaShulchan), new("🌧 שינויי התפילה", $"{GeshemText}\n{TalText}")),
+                (new("🌙 שבת מברכים", $"{ShabbatMevarchimText}\n{MoladText}"), new("✡ היום יום", HayomYom)),
+                (new("🗓 פרשת השבוע", $"{Parasha}\n{ParshaSummary}"), new("📜 רש״י על הפרשה", ParshaRashi)),
+                (new("📖 פרק תהילים יומי", $"{TehillimChapterTitle}\n{TehillimText}"), new("🕊 לרפואה שלמה", RefuahNamesText)),
+                (new("🕯 לעילוי נשמת", NeshamaNamesText), new("🕍 זמני תפילות", Prayers))
+            };
+
+            var page = pages[_learningPage % pages.Count];
+            LearningTitle1 = page.First.Title;
+            LearningBody1 = VisibleOrLoading(page.First.Body);
+            LearningTitle2 = page.Second.Title;
+            LearningBody2 = VisibleOrLoading(page.Second.Body);
+        }
         
         public async Task LoadParshaAsync()
         {
@@ -405,17 +514,17 @@ namespace BeitKnessetDisplay
             Chumash = _learning.GetChumashAliya(now);
 
             // 🆕 כל הלימודים מ-Sefaria
-            DafYomi = _sefaria.Get("Daf Yomi", _learning.GetDafYomi(now));
-            Rambam = _sefaria.Get("Daily Rambam (3 Chapters)", _jewish.GetRambam3(now));
-            Rambam1Perek = _sefaria.Get("Daily Rambam", "");
-            Tanya = _sefaria.Get("Tanya Yomi", _learning.GetTanya(now));
-            Mishna = _sefaria.Get("Daily Mishnah", "");
-            Yerushalmi = _sefaria.Get("Yerushalmi Yomi", "");
-            Halakha = _sefaria.Get("Halakhah Yomit", "");
-            TanakhYomi = _sefaria.Get("Tanakh Yomi", "");
-            Yom929 = _sefaria.Get("929", "");
-            ChokLeYisrael = _sefaria.Get("Chok LeYisrael", "");
-            ArukhHaShulchan = _sefaria.Get("Arukh HaShulchan Yomi", "");
+            DafYomi = VisibleOrDash(_sefaria.Get("Daf Yomi", _learning.GetDafYomi(now)));
+            Rambam = VisibleOrDash(_sefaria.Get("Daily Rambam (3 Chapters)", _jewish.GetRambam3(now)));
+            Rambam1Perek = VisibleOrDash(_sefaria.Get("Daily Rambam", ""));
+            Tanya = VisibleOrDash(_sefaria.Get("Tanya Yomi", _learning.GetTanya(now)));
+            Mishna = VisibleOrDash(_sefaria.Get("Daily Mishnah", ""));
+            Yerushalmi = VisibleOrDash(_sefaria.Get("Yerushalmi Yomi", ""));
+            Halakha = VisibleOrDash(_sefaria.Get("Halakhah Yomit", ""));
+            TanakhYomi = VisibleOrDash(_sefaria.Get("Tanakh Yomi", ""));
+            Yom929 = VisibleOrDash(_sefaria.Get("929", ""));
+            ChokLeYisrael = VisibleOrDash(_sefaria.Get("Chok LeYisrael", ""));
+            ArukhHaShulchan = VisibleOrDash(_sefaria.Get("Arukh HaShulchan Yomi", ""));
 
 
             //HayomYom = _learning.GetHayomYom(now);
@@ -464,7 +573,7 @@ namespace BeitKnessetDisplay
                 ? "אומרים: ותן טל ומטר לברכה"
                 : "אומרים: ברכנו / ותן ברכה";
 
-            Zmanim = _zmanim.GetTodayZmanim();
+            Zmanim = GetZmanimSafe();
 
             // הפעלת עדכון מזג האוויר מיד בעליית המסך
             // 1. הפעלת עדכון מזג האוויר מיד בעליית המסך
@@ -490,6 +599,7 @@ namespace BeitKnessetDisplay
             }
             catch { ParshaRashi = "—"; }
 
+            UpdateLearningCards();
 
         }
     }
