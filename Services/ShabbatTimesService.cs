@@ -12,9 +12,16 @@ namespace BeitKnessetDisplay.Services
         public record ShabbatTimes(string CandleLighting, string Havdalah, string ParashaHebrew);
 
         // geonameid: ירושלים=281184, תל אביב=293397, חיפה=294801, באר שבע=295530
-        public static async Task<ShabbatTimes> GetAsync(int geonameId = 293397, int havdalahMin = 50)
+        // ברירת מחדל: כפר חב"ד — לפי לוח chabad.org.il
+        // הדלקת נרות 22 דקות לפני השקיעה, הבדלה לפי ר"ת (72 דק' אחרי השקיעה)
+        public static async Task<ShabbatTimes> GetAsync(
+            double latitude = 31.9878,
+            double longitude = 34.8500,
+            string tzid = "Asia/Jerusalem",
+            int candleMin = 22,
+            int havdalahMin = 43)
         {
-            var url = $"https://www.hebcal.com/shabbat?cfg=json&geonameid={geonameId}&M=on&b=18&m={havdalahMin}&lg=h";
+            var url = $"https://www.hebcal.com/shabbat?cfg=json&latitude={latitude}&longitude={longitude}&tzid={tzid}&b={candleMin}&m={havdalahMin}&lg=h";
             var json = await _http.GetStringAsync(url);
             using var doc = JsonDocument.Parse(json);
 

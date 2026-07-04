@@ -368,14 +368,14 @@ namespace BeitKnessetDisplay
         private string _havdalah = "--:--";
         public string Havdalah { get => _havdalah; set { _havdalah = value; OnPropertyChanged(); } }
 
-        private string _shabbatCity = "תל אביב";
+        private string _shabbatCity = "כפר חב\"ד";
         public string ShabbatCity { get => _shabbatCity; set { _shabbatCity = value; OnPropertyChanged(); } }
 
         public async Task LoadShabbatTimesAsync()
         {
             try
             {
-                var t = await Services.ShabbatTimesService.GetAsync(293397); // תל אביב
+                var t = await Services.ShabbatTimesService.GetAsync(); // כפר חב"ד (ברירת מחדל)
                 CandleLighting = t.CandleLighting;
                 Havdalah = t.Havdalah;
             }
