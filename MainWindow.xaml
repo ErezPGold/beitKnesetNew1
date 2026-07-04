@@ -68,12 +68,12 @@
         <Style x:Key="Label" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource GoldTrim}"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontSize" Value="28"/>
             <Setter Property="TextAlignment" Value="Center"/>
         </Style>
         <Style x:Key="Value" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource Ivory}"/>
-            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontSize" Value="28"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
             <Setter Property="TextAlignment" Value="Center"/>
         </Style>
@@ -143,11 +143,19 @@
                     <Grid Margin="20">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
+                        <!-- ===== CLOCK BAR ===== -->
+                        <Border Grid.Row="0" Style="{StaticResource Card}" Margin="0,0,0,10">
+                            <TextBlock Text="{Binding Clock}" FontFamily="Consolas"
+                                       FontSize="150" FontWeight="Bold"
+                                       Foreground="{StaticResource Ivory}"
+                                       TextAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
 
                         <!-- ===== HEADER ===== -->
-                        <Border Grid.Row="0" Style="{StaticResource Card}">
+                        <Border Grid.Row="1" Style="{StaticResource Card}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -156,60 +164,62 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
-                                <!-- שעון + מזג אוויר -->
-                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Clock}" FontFamily="Consolas" FontSize="64"
-                       Foreground="{StaticResource Ivory}" TextAlignment="Center"/>
+                                <!-- מזג אוויר -->
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">                                    
                                     <TextBlock Text="{Binding CurrentTemperature}" Style="{StaticResource Value}"
-                       FontSize="26" FlowDirection="LeftToRight" TextAlignment="Center"/>
+                       FontSize="34" FlowDirection="LeftToRight" TextAlignment="Center"/>
                                     <TextBlock Text="{Binding WeatherCondition}" Style="{StaticResource Value}"
-                       FontSize="20" Foreground="{StaticResource Muted}"/>
+                       FontSize="26" Foreground="{StaticResource Muted}"/>
                                 </StackPanel>
 
                                 <!-- כותרת + תאריך -->
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="ברוכים הבאים לבית הכנסת" FontSize="40"
-                       Foreground="{StaticResource GoldTrim}" FontWeight="Bold" TextAlignment="Center"/>
+                                    <TextBlock Text="ברוכים הבאים " FontSize="70"
+                       Foreground="{StaticResource GoldTrim}" FontWeight="Bold" TextAlignment="Center"/>                                    
                                     <TextBlock Text="{Binding HebrewDate}" Style="{StaticResource Value}"
-                       FontSize="30" Margin="0,6,0,0"/>
+                       FontSize="38" Margin="0,6,0,0"/>
                                     <TextBlock Text="{Binding GregorianDate}" Style="{StaticResource Value}"
-                       FontSize="22" Foreground="{StaticResource Muted}"/>
+                       FontSize="28" Foreground="{StaticResource Muted}"/>
                                 </StackPanel>
 
                                 <!-- פרשה + הפטרה -->
                                 <StackPanel Grid.Column="2" VerticalAlignment="Center">
                                     <TextBlock Text="פרשת השבוע" Style="{StaticResource Label}"/>
-                                    <TextBlock Text="{Binding Parasha}" Style="{StaticResource Value}" FontSize="26"/>
+                                    <TextBlock Text="{Binding Parasha}" Style="{StaticResource Value}" FontSize="34"/>
                                     <TextBlock Text="הפטרה" Style="{StaticResource Label}" Margin="0,8,0,0"/>
                                     <TextBlock Text="{Binding Haftarah}" Style="{StaticResource Value}"
-                       FontSize="20" Foreground="{StaticResource Muted}"/>
+                       FontSize="26" Foreground="{StaticResource Muted}"/>
                                 </StackPanel>
 
                                 <!-- זמני שבת -->
                                 <Border Grid.Column="3" Background="#1B2A4E" CornerRadius="12"
-                Padding="16,12" Margin="8,0"
-                BorderBrush="#E8B86D" BorderThickness="2"
-                VerticalAlignment="Center">
+                                        Padding="16,12" Margin="8,0"
+                                        BorderBrush="#E8B86D" BorderThickness="2"
+                                        VerticalAlignment="Center">
                                     <StackPanel>
-                                        <TextBlock Text="זמני שבת" Foreground="#E8B86D" FontSize="20"
+                                        <TextBlock Text="זמני שבת" Foreground="#E8B86D" FontSize="26"
                            FontWeight="Bold" HorizontalAlignment="Center"/>
                                         <TextBlock Text="{Binding ShabbatCity}" Foreground="#F4E4BC"
-                           FontSize="14" HorizontalAlignment="Center" Margin="0,2,0,6"/>
+                           FontSize="18" HorizontalAlignment="Center" Margin="0,2,0,6"/>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                             <StackPanel Margin="10,0">
                                                 <TextBlock Text="🕯 הדלקת נרות" Foreground="#F4E4BC"
-                                   FontSize="14" HorizontalAlignment="Center"/>
+                                   FontSize="18" HorizontalAlignment="Center"/>
                                                 <TextBlock Text="{Binding CandleLighting}" Foreground="White"
-                                   FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                   FontSize="36" FontWeight="Bold" HorizontalAlignment="Center"/>
                                             </StackPanel>
                                             <Border Width="1" Background="#E8B86D" Margin="8,4"/>
                                             <StackPanel Margin="10,0">
                                                 <TextBlock Text="✨ צאת השבת" Foreground="#F4E4BC"
-                                   FontSize="14" HorizontalAlignment="Center"/>
+                                   FontSize="18" HorizontalAlignment="Center"/>
                                                 <TextBlock Text="{Binding Havdalah}" Foreground="White"
-                                   FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                   FontSize="36" FontWeight="Bold" HorizontalAlignment="Center"/>                                                
                                             </StackPanel>
+                                                
                                         </StackPanel>
+                                        <TextBlock Text="יחי אדוננו מורנו ורבנו מלך המשיח לעולם ועד" Foreground="#E8B86D"                                                   
+                                                   FontSize="17" FontWeight="Bold"
+                                                   TextAlignment="Center" Margin="0,4,0,4"/>
                                     </StackPanel>
                                 </Border>
                             </Grid>
@@ -217,7 +227,7 @@
                         <!-- סוף Header -->
 
                         <!-- ===== CONTENT ===== -->
-                        <Grid Grid.Row="1">
+                        <Grid Grid.Row="2">
 
                             <!-- ===== דשבורד: זמני היום בצדדים + 2 כרטיסים גדולים במרכז ===== -->
                             <Grid>
@@ -241,7 +251,7 @@
                                 <!-- צד ימין: זמני היום -->
                                 <Border Grid.Column="0" Background="#F6EFD8" BorderBrush="#B8842D" BorderThickness="2" CornerRadius="14" Padding="12" Margin="0,10,10,10">
                                     <DockPanel>
-                                        <TextBlock DockPanel.Dock="Top" Text="זמני היום" FontSize="32" FontWeight="Bold" Foreground="#52330E" TextAlignment="Center" Margin="0,0,0,10"/>
+                                        <TextBlock DockPanel.Dock="Top" Text="זמני היום" FontSize="40" FontWeight="Bold" Foreground="#52330E" TextAlignment="Center" Margin="0,0,0,10"/>
                                         <ItemsControl ItemsSource="{Binding RightZmanim}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
@@ -251,8 +261,8 @@
                                                                 <ColumnDefinition Width="*"/>
                                                                 <ColumnDefinition Width="Auto"/>
                                                             </Grid.ColumnDefinitions>
-                                                            <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="23" FontWeight="SemiBold" Foreground="#53320B" TextWrapping="Wrap"/>
-                                                            <TextBlock Grid.Column="1" Text="{Binding Time}" FontSize="29" FontWeight="Bold" Foreground="#0B4F6C" FlowDirection="LeftToRight" Margin="10,0,0,0"/>
+                                                            <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="28" FontWeight="SemiBold" Foreground="#53320B" TextWrapping="Wrap"/>
+                                                            <TextBlock Grid.Column="1" Text="{Binding Time}" FontSize="36" FontWeight="Bold" Foreground="#0B4F6C" FlowDirection="LeftToRight" Margin="10,0,0,0"/>
                                                         </Grid>
                                                     </Border>
                                                 </DataTemplate>
@@ -285,7 +295,7 @@
                                 <!-- צד שמאל: המשך זמני היום -->
                                 <Border Grid.Column="2" Background="#EAF4F6" BorderBrush="#5E9CAF" BorderThickness="2" CornerRadius="14" Padding="12" Margin="10,10,0,10">
                                     <DockPanel>
-                                        <TextBlock DockPanel.Dock="Top" Text="המשך זמנים" FontSize="32" FontWeight="Bold" Foreground="#143D4A" TextAlignment="Center" Margin="0,0,0,10"/>
+                                        <TextBlock DockPanel.Dock="Top" Text="המשך זמנים" FontSize="40" FontWeight="Bold" Foreground="#143D4A" TextAlignment="Center" Margin="0,0,0,10"/>
                                         <ItemsControl ItemsSource="{Binding LeftZmanim}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
@@ -295,8 +305,8 @@
                                                                 <ColumnDefinition Width="*"/>
                                                                 <ColumnDefinition Width="Auto"/>
                                                             </Grid.ColumnDefinitions>
-                                                            <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="23" FontWeight="SemiBold" Foreground="#143D4A" TextWrapping="Wrap"/>
-                                                            <TextBlock Grid.Column="1" Text="{Binding Time}" FontSize="29" FontWeight="Bold" Foreground="#8A4B0F" FlowDirection="LeftToRight" Margin="10,0,0,0"/>
+                                                            <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="28" FontWeight="SemiBold" Foreground="#143D4A" TextWrapping="Wrap"/>
+                                                            <TextBlock Grid.Column="1" Text="{Binding Time}" FontSize="36" FontWeight="Bold" Foreground="#8A4B0F" FlowDirection="LeftToRight" Margin="10,0,0,0"/>
                                                         </Grid>
                                                     </Border>
                                                 </DataTemplate>
@@ -321,8 +331,8 @@
                                 <Border Style="{StaticResource AnimatedCard}">
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="📣" Style="{StaticResource PulseIcon}"/>
-                                        <TextBlock Text="{Binding ReminderTitle}" Style="{StaticResource Label}" FontSize="56"/>
-                                        <TextBlock Text="{Binding ReminderBody}" Style="{StaticResource Value}" FontSize="38" Margin="20" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding ReminderTitle}" Style="{StaticResource Label}" FontSize="72"/>
+                                        <TextBlock Text="{Binding ReminderBody}" Style="{StaticResource Value}" FontSize="50" Margin="20" TextWrapping="Wrap"/>
                                     </StackPanel>
                                 </Border>
                             </Grid>
@@ -342,8 +352,8 @@
                                 <Border Style="{StaticResource AnimatedCard}">
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="🕍" Style="{StaticResource PulseIcon}"/>
-                                        <TextBlock Text="זמני תפילות" Style="{StaticResource Label}" FontSize="56"/>
-                                        <TextBlock Text="{Binding Prayers}" Style="{StaticResource Value}" FontSize="36" Margin="20"/>
+                                        <TextBlock Text="זמני תפילות" Style="{StaticResource Label}" FontSize="72"/>
+                                        <TextBlock Text="{Binding Prayers}" Style="{StaticResource Value}" FontSize="36" Margin="48"/>
                                     </StackPanel>
                                 </Border>
                             </Grid>
@@ -364,11 +374,11 @@
                                 <Border Style="{StaticResource AnimatedCard}">
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="💙" Style="{StaticResource PulseIcon}"/>
-                                        <TextBlock Text="להצלחה ולרפואה שלמה" Style="{StaticResource Label}" FontSize="56"/>
+                                        <TextBlock Text="להצלחה ולרפואה שלמה" Style="{StaticResource Label}" FontSize="72"/>
                                         <ItemsControl ItemsSource="{Binding RefuahNames}" Margin="0,20,0,0">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <TextBlock Text="{Binding}" Style="{StaticResource Value}" FontSize="36" Margin="0,6" TextAlignment="Center"/>
+                                                    <TextBlock Text="{Binding}" Style="{StaticResource Value}" FontSize="48" Margin="0,6" TextAlignment="Center"/>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
@@ -391,11 +401,11 @@
                                 <Border Style="{StaticResource AnimatedCard}">
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="🕯" Style="{StaticResource PulseIcon}"/>
-                                        <TextBlock Text="לעילוי נשמת" Style="{StaticResource Label}" FontSize="56"/>
+                                        <TextBlock Text="לעילוי נשמת" Style="{StaticResource Label}" FontSize="72"/>
                                         <ItemsControl ItemsSource="{Binding NeshamaNames}" Margin="0,20,0,0">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <TextBlock Text="{Binding}" Style="{StaticResource Value}" FontSize="36" Margin="0,6" TextAlignment="Center"/>
+                                                    <TextBlock Text="{Binding}" Style="{StaticResource Value}" FontSize="48" Margin="0,6" TextAlignment="Center"/>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
@@ -418,13 +428,13 @@
                                 </Border.Style>
                                 <StackPanel VerticalAlignment="Center">
                                     <TextBlock Text="🕯" Style="{StaticResource PulseIcon}"/>
-                                    <TextBlock Text="{Binding YahrzeitHeader}" Style="{StaticResource Label}" FontSize="50"/>
+                                    <TextBlock Text="{Binding YahrzeitHeader}" Style="{StaticResource Label}" FontSize="64"/>
                                     <ItemsControl ItemsSource="{Binding Yahrzeits}" Margin="0,20,0,0">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <StackPanel Margin="0,10">
-                                                    <TextBlock Text="{Binding Name}" Style="{StaticResource Label}" FontSize="34"/>
-                                                    <TextBlock Text="{Binding Description}" Style="{StaticResource Value}" FontSize="24" Margin="20,4,20,0"/>
+                                                    <TextBlock Text="{Binding Name}" Style="{StaticResource Label}" FontSize="44"/>
+                                                    <TextBlock Text="{Binding Description}" Style="{StaticResource Value}" FontSize="32" Margin="20,4,20,0"/>
                                                 </StackPanel>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
